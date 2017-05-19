@@ -1,7 +1,7 @@
 
-
           //
-          //  AnchorConstraintHelper.swift
+          //  AnchorExtension.swift
+          //  TestToBeDeletedSOon
           //
           //  Created by eric yu on 5/18/17.
           //  Copyright © 2017 eric yu. All rights reserved.
@@ -11,6 +11,18 @@
           import UIKit
           extension UIView {
 
+              func anchorTopView(viewOnTop v: UIView,paddingTop p: CGFloat){
+
+                  translatesAutoresizingMaskIntoConstraints = false
+
+                  self.topAnchor.constraint(equalTo: v.bottomAnchor, constant: p).isActive = true
+                  self.leadingAnchor.constraint(equalTo: v.leadingAnchor, constant: 0).isActive = true
+
+                  self.trailingAnchor.constraint(equalTo: v.trailingAnchor, constant: 0).isActive = true
+
+                  self.heightAnchor.constraint(equalTo: v.heightAnchor, multiplier: 0)
+
+              }
 
               func anchorToCenter(x: NSLayoutXAxisAnchor?, y: NSLayoutYAxisAnchor?,offsetX: CGFloat, offsetY: CGFloat,width: CGFloat, height: CGFloat){
                   translatesAutoresizingMaskIntoConstraints = false
