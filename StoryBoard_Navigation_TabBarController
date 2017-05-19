@@ -1,0 +1,13 @@
+#  Add Navigation or TabBar
+
+
+
+
+click on ViewController -> Editor -> embed in 
+
+than choose
+
+A. Navigation 
+     to add more view down the chain  "control drag to another vc" + "show"
+B. TabBar
+     to add more TabBar selection "control drag from tabbar Controller" + "view controllers"
