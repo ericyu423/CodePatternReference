@@ -11,7 +11,7 @@
           import UIKit
           extension UIView {
 
-              func anchorTopView(viewOnTop v: UIView,paddingTop p: CGFloat){
+              func anchorToTopView(viewOnTop v: UIView,paddingTop p: CGFloat){
 
                   translatesAutoresizingMaskIntoConstraints = false
 
