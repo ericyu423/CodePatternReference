@@ -29,6 +29,12 @@
            
            
 #  put views in stack
+            //single
+            stackView.addArrangedSubview
+            
+            //array
+            stackView[i].addArrangedSubview
+
 
             boardView.addSubview(stackView[0])
             boardView.addSubview(stackView[1])
