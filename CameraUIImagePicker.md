@@ -8,6 +8,10 @@
                 //  Copyright © 2017 eric yu. All rights reserved.
                 //
 
+# plist add 
+# "Privacy - Photo Library Usage Description"
+# "Privacy - Camera Usage Description"
+
                 import UIKit
 
                 class ViewController: UIViewController,UIImagePickerControllerDelegate,UINavigationControllerDelegate {
