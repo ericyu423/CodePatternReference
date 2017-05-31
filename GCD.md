@@ -5,12 +5,12 @@
                   //basically tell you program to move the time consuming stuff away from main
               }
               
-//this one is always inside some other block
+//example
 
               someBackgroundBlock {
                   DispatchQueue.main.sync {
                    //block thread untill I am done
-                   //self.tableView.reloadData()  <-- reload data NOW 
+                   //self.tableView.reloadData()  
                   }
               }
               
