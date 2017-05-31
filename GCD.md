@@ -13,6 +13,53 @@
                    //self.tableView.reloadData()  <-- reload data NOW 
                   }
               }
+              
+              
+//example              
+
+            let session = URLSession(configuration: .default)
+            if let url = URL(string: "http://") {
+                let task = session.dataTask(with:url) {(data: Data?, reponse, error) in
+                
+                print("do other stuff")
+                
+                    DispatchQueue.main.async{
+
+                    }
+                    print("do stuff")
+                }
+                task.resume()
+            }
+            print("I am outside the block")
+            
+step 1. no stopping all step happens immediately
+  created urlsession, task and task.resume() sent it to another thread to run the block prints " I am outside the block"
+  
+step 2. "do stuff" might take a while only after you get the data, you might not care about the info
+        "do stuff with UI" happen immediately after fnishing with main.aync
+        than finally do thing inside main.async
+        
+        
+example 2:     
+
+            private func fetchImage(){
+                if let url = imageURL { [weak self] in
+
+                    DispatchQueue.global(qos: .userInitiated).async {
+                        if let imageData = urlContents, url == self?.imageUrl{
+
+                            DispatchQueue.main.async {
+                                self?.image = UIImage(data: imageData)
+                            }
+
+                        }
+
+                    }
+                }
+            }
+        
+
+
 
 # Quickest - .main   (short and quick,high priority)
     
