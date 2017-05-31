@@ -32,7 +32,7 @@
 
 # async modifier
 
-we almost always use this one ASYNC
+we almost always use this one ASYNC, Does nothing except put it in queue
 
 **************************************************************
              backgroundQueue1.async {
