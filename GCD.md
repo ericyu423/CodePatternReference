@@ -9,7 +9,7 @@
 
               someBackgroundBlock {
                   DispatchQueue.main.sync {
-                   //you need to take the information in this queue and put it back to UI immedately
+                   //block thread untill I am done
                    //self.tableView.reloadData()  <-- reload data NOW 
                   }
               }
