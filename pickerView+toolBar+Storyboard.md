@@ -1,7 +1,7 @@
 
 //define toolbar
 
-  private lazy var toolbar: UIToolbar = {
+        private lazy var toolbar: UIToolbar = {
         let toolbar = UIToolbar()
         let item1 = UIBarButtonItem(title: "Cancel", style: UIBarButtonItemStyle.plain, target: self, action: #selector(cancel))
         
@@ -23,12 +23,12 @@
     _.inputAccessoryView = toolbar
     
     
-    **important the picker will not clip to the toolbar so u need to make adjustment in storyboard
+**important the picker will not clip to the toolbar so u need to make adjustment in storyboard
     
-    autoreszing click the inner square
+  autoreszing click the inner square
     
-    default is L U R to the outer edge
-    inner square only have horizontal <->  u also need to click on verticle
+ default is L U R to the outer edge
+ inner square only have horizontal <->  u also need to click on verticle
     
     
  <p align="center">
