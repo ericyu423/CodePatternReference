@@ -31,9 +31,7 @@
     inner square only have horizontal <->  u also need to click on verticle
     
     <p align="center">
-  <img src="https://github.com/ericyu423/MasterOneConceptPerDay/blob/master/image/resize.png" width="200"/>
-
-  
-</p>
+        <img src="https://github.com/ericyu423/MasterOneConceptPerDay/blob/master/image/resize.png" width="400"/>
+    </p>
     
     
