@@ -1,54 +1,128 @@
-# Incomplete file will need to be modified   
+# read/write to ical 
     
-    
+//
+//  Calendar.swift
+//  iCalendarApp
+//
+//  Created by eric yu on 10/16/17.
+//  Copyright © 2017 eric yu. All rights reserved.
+//
+
+    import Foundation
     import EventKit
-     
-     let eventStore = EKEventStore()
-     
-      func checkEventStoreAccessForCalendar(){
+
+    class EventWriter {
+    
+    var eventStore = EKEventStore()
+
+    func createNewCalendarWithID(reservationCode code: String)->String{
+        
+        removeCalendar(withReservationCode: code)
+        
+        let newCalendar = EKCalendar(for: .event, eventStore: eventStore)
+        newCalendar.title = "Trip( "+code+" )"
+        
+        let filteredSources = eventStore.sources.filter {
+            $0.sourceType == .local }
+        
+        if let localSource = filteredSources.first {
+            
+            newCalendar.source = localSource
+            
+            do {
+                try eventStore.saveCalendar(newCalendar, commit: true)
+                UserDefaults.standard.set(newCalendar.calendarIdentifier,forKey:code)
+                print("succesfully save calendar with id"+newCalendar.calendarIdentifier)
+                
+            } catch {
+                print("save failed\(error.localizedDescription)")
+            }
+            
+        }else{
+            print("no local source found")
+        }
+        
+        return newCalendar.calendarIdentifier
+    }
+    
+    func checkEventStoreAccessForCalendar(){
+        
         let status = EKEventStore.authorizationStatus(for: .event)
         if(status == .notDetermined){
             requestCalendarAccess()
         }
     }
     
-    
-     func requestCalendarAccess(){
-        eventStore.requestAccess(to: .event) { granted, error in
-            if (granted){
+    func addEvent(calendarID: String?,title: String){
+        
+
+        let calendars = eventStore.calendars(for: .event).filter {
+            $0.calendarIdentifier == calendarID
+            }
+        
+        if let calendarForThisEvent = calendars.first {
+        
+        
+        let newEvent:EKEvent = EKEvent(eventStore: eventStore)
+        
+        newEvent.calendar = calendarForThisEvent
+        newEvent.title = title
+        newEvent.startDate = Date()
+        newEvent.endDate = Date()
+            
+        
+        /*
+         var tripQuery = ""
+         if let code = destinationHandler?.currentTrip?.reservationCode,
+         let escapedName = code.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) {
+         tripQuery = "&trip=\(escapedName)"
+         }*/
+        /* let timeQuery = Int64(excursion.timeSlot.start.timeIntervalSince1970)
+         newEvent.url = URL(string: "\(ApplicationURLScheme)?q=\(timeQuery)\(tripQuery)")*/
+        
+        // Save the calendar using the Event Store instance
+        
+            do {
+                try eventStore.save(newEvent, span: .thisEvent, commit: true)
+            } catch {
+                print("event couldn't be saved \(error.localizedDescription)")
+            }
+        }
+  
+        
+    }
+
+}
+
+    extension EventWriter {
+    private func requestCalendarAccess(){
+        eventStore.requestAccess(to: .event) { (granted, error) in
+            if granted{
                 print("Access Granted to Calendar ...")
+                //get rid of warnning
             }
         }
     }
     
-    
-     func addEvent(_ newItem: NewItem){
+    private func removeCalendar(withReservationCode code : String){
         
-        let calendarForEvent = eventStore.defaultCalendarForNewEvents
-        
-        let newEvent = EKEvent(eventStore: eventStore)
-        
-        newEvent.calendar = _
-        newEvent.title = _
-        newEvent.notes = _
-        newEvent.location = _
-        newEvent.startDate = _
-        newEvent.endDate = _
-        
-        var tripQuery = ""
-        if let code = destinationHandler?.currentTrip?.reservationCode,
-            let escapedName = code.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) {
-            tripQuery = "&trip=\(escapedName)"
-        }
-        let timeQuery = Int64(excursion.timeSlot.start.timeIntervalSince1970)
-        newEvent.url = URL(string: "\(ApplicationURLScheme)?q=\(timeQuery)\(tripQuery)")
-        
-        // Save the calendar using the Event Store instance
-        
-        do {
-            try eventStore.save(newEvent, span: .thisEvent, commit: true)
-            dismiss(animated: true, completion: nil);
-        } catch {
-            print("event couldn't be saved \(error.localizedDescription)")
+        if let calendarID = UserDefaults.standard.value(forKey: code) as? String {
+            
+            /* eventStore.calendar(withIdentifier: calendarID) gaves types 3 from daemon: Error Domain=EKCADErrorDomain Code=1014 */
+            let calendars = eventStore.calendars(for: .event).filter{
+                $0.calendarIdentifier == calendarID
+            }
+            
+            if let newCalendar = calendars.first {
+                do {
+                    try eventStore.removeCalendar(newCalendar, commit: true)
+                    print("succesfully removed "+code)
+                }catch{
+                    print("calendar can't be removed \(error.localizedDescription)")
+                }
+            }
+            
         }
     }
+    
+}
