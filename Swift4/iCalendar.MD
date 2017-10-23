@@ -1,12 +1,10 @@
 # read/write to ical 
     
-//
-//  Calendar.swift
-//  iCalendarApp
-//
-//  Created by eric yu on 10/16/17.
-//  Copyright © 2017 eric yu. All rights reserved.
-//
+# Issues
+
+* if the source is icloud once you write it, the user can not delete it from iphone
+* it can only be delete from the icloud account
+
 
     import Foundation
     import EventKit
