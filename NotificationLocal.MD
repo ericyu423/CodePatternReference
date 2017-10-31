@@ -34,3 +34,44 @@
             print("\(response.notification.request.content.userInfo)")
         }
     }
+    
+    
+ # Set/Edit with Identifier (same Identifer will overwrite previous notification)
+ 
+ 
+      @IBAction func setNewNotificationTime(_ sender: UIButton) {
+      //click to overwrite
+             SetUserNotification(identifier: "XSDIM",timeInterval: AlertTime.twentyFourHour)
+        }
+        
+        override func viewDidLoad() {
+            super.viewDidLoad()
+            SetUserNotification(identifier: "XSDIM",timeInterval: AlertTime.fiveMinute)
+        }
+
+
+
+        func  SetUserNotification(identifier: String,timeInterval: AlertTime){
+            let center = UNUserNotificationCenter.current()
+            let content = UNMutableNotificationContent()
+            content.title = "24 Hour till boarding"
+            content.body = "it was set to alert in \(timeInterval.rawValue)"
+            content.sound = UNNotificationSound.default()
+
+            var trigger: UNTimeIntervalNotificationTrigger!
+
+            trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval.rawValue, repeats: false)
+
+            let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+            center.add(request, withCompletionHandler: nil)
+
+        }
+        enum AlertTime:Double {
+            case fiveMinute = 5
+            case twentyFourHour = 50
+        }
+        
+ #Delete Notifications
+ 
+     //you can pass in an array
+     UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["XSDIM"])
