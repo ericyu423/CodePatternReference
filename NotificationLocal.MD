@@ -71,7 +71,16 @@
             case twentyFourHour = 50
         }
         
- #Delete Notifications
+# Delete Notifications
  
      //you can pass in an array
      UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["XSDIM"])
+     
+# UnitTest Find Current Pendings Notifcadtions
+
+    UNUserNotificationCenter.current().getPendingNotificationRequests{ (pendingNotification) in 
+            print("\(pendingNotification.count) 
+            for notification in pendingNotification{
+                print(notification.identifier)
+          
+            }
