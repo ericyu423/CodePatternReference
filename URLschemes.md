@@ -12,8 +12,6 @@ step 2. "myAppName://" this will get you back to your app
 do something here you want. eg move to a view controller you want to goto
 
 
-   func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
-
-
+    func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
           return true
     }
