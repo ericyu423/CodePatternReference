@@ -4,8 +4,8 @@ step 1. register plist
 
 
     <p align="center">
-  <img src="https://github.com/ericyu423/CodePatternReference/blob/master/image/schemes.png" width="200"/>
-  </p>
+     <img src="https://github.com/ericyu423/CodePatternReference/blob/master/image/schemes.png" width="200"/>
+   </p>
 
 step 2. "myAppName://" this will get you back to your app
 
