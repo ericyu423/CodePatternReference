@@ -1,0 +1,8 @@
+
+"a b c"
+
+"a b c".addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+
+turns to 
+
+"a%20b%20c"
