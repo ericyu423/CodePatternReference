@@ -40,9 +40,14 @@
                 override func viewDidLoad() {
                     super.viewDidLoad()
                 }
-                var completionBlock: (() -> ())?
+                
+                //both ways work
+                //var completionBlock: (() -> ())?
+                var completionBlock: (() -> Void)?
+                
+                /*probably better to write it as (() -> Void) since that is how it shows in compiler 
+                 self.dismiss(animated: Bool, completion:(() -> Void)?)*/
 
-                //meaning this will take a code block with no return value
                 func doesSomething(){}
                 func doesSomethingElse(){}
 
