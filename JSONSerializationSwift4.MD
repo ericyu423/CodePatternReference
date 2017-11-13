@@ -1,3 +1,28 @@
+# JSON -> Struct simple case
+
+                struct Traveler: Decodable {
+                    let fullName: String
+                    let id: Int
+                    let web: URL
+                }
+
+                let json = """
+                {
+                 "fullName": "a",
+                 "id": 1,
+                 "web": "http://google.com"
+                }
+                """
+
+                 let data = json.data(using: .utf8)! //if it came in as data you won't need to convert it
+                 let traveler = try JSONDecoder().decode(Traveler.self, from: data)
+
+
+                print(traveler)
+
+
+
+
 # JSON response (pretty damn easy if you do it once)
 
         {
