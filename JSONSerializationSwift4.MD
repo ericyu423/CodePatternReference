@@ -21,11 +21,43 @@ read more details: https://developer.apple.com/documentation/foundation/archives
 
 
                 print(traveler)
+                
+# If is an array
+
+          let traveler:[traveler] = try JSONDecoder().decode([Traveler].self, from: data)
+          
+# If is an dictionary
+
+          let traveler:[String:Traveler] = try JSONDecoder().decode([String: Traveler].self, from: json)
+
+          traveler.forEach { print("\($0.key): \($0.value)") } //print it out to see
+          
+          
+
+# Enum (from https://stackoverflow.com/questions/44580719/how-do-i-make-an-enum-decodable-in-swift-4)
+
+                      enum PostType : Int, Codable {
+                    case count = 4
+                }
+
+                struct Post : Codable {
+                    var type : PostType
+                }
+
+                let jsonString = "{\"type\": 4}"
+
+                let jsonData = jsonString.data(using: .utf8)!
+
+                do {
+                    let decoded = try JSONDecoder().decode(Post.self, from: jsonData)
+                    print("decoded:", decoded.type)
+                } catch {
+                    print(error)
+                }
 
 
 
-
-# JSON response (pretty damn easy if you do it once)
+# JSON response *more examples*
 
         {
           name: "My Swift Course"
