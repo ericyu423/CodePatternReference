@@ -1,3 +1,5 @@
+read more details: https://developer.apple.com/documentation/foundation/archives_and_serialization/encoding_and_decoding_custom_types
+
 # JSON -> Struct simple case
 
                 struct Traveler: Decodable {
