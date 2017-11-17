@@ -4,21 +4,28 @@
 
 * if the source is icloud once you write it, the user can not delete it from iphone
 
-     private func getSource() -> EKSource? {
-         if let defaultSource = eventStore.defaultCalendarForNewEvents?.source {
-             //may have iCloud account, and then we will not have a local source
-             dLog("EventWriter: found source from default calendar. \(defaultSource.sourceType)")
-             return defaultSource
-         }
- 
-         if let localSource = eventStore.sources.first(where: { $0.sourceType == .local }) {
-             dLog("EventWriter: found source for local calendar. \(localSource.sourceType)")
-             return localSource
-         }
-         return nil
-     }
-    
+
+
 * it can only be delete from the icloud account
+
+
+# issue with icloud (add this check)
+
+
+             func getSource() -> EKSource? {
+                 if let defaultSource = eventStore.defaultCalendarForNewEvents?.source {
+                     //may have iCloud account, and then we will not have a local source
+          
+                 return defaultSource
+             }
+
+             if let localSource = eventStore.sources.first(where: { $0.sourceType == .local }) {
+           
+                 areturn localSource
+             }
+             return nil
+         }
+
 
 
     import Foundation
