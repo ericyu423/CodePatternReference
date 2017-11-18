@@ -1,0 +1,32 @@
+# loop through dictionary
+
+
+        HashMap<String, String> myDict = new HashMap<>();
+            myDict.put("1", "blue");
+            myDict.put("2", "green");
+            myDict.put("3", "yellow");
+            
+          //  myDict.forEach((k,v) -> System.out.println("key: "+k+" value:"+v));
+
+            myDict.forEach( (k,v) -> {
+
+                        System.out.println("key" + k);
+                        System.out.println("value" + v);
+                    }
+            );
+
+
+# swift 
+        var myDict = [String:String]()
+        myDict["1"] = "blue"
+        myDict["2"] = "green"
+        myDict["3"] = "yellow"
+
+        myDict.forEach { (k,v) in
+            print("the key is " + k)
+            print("the value is" + v)
+        }
+        
+        
+        
+
