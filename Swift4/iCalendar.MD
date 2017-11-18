@@ -1,12 +1,5 @@
 # read/write to ical 
-    
-# Issues
-
-* if the source is icloud once you write it, the user can not delete it from iphone
-
-
-
-* it can only be delete from the icloud account
+ 
 
 
 # issue with icloud (add this check)
