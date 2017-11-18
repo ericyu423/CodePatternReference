@@ -1,3 +1,6 @@
+# Using -  if let (statement),(statement) { return }
+
+- sometimes it makes it easier to read, but not all the time
 
 
           static func tripStatusEditability(status: String? ,endDate: Date?) -> Bool {
