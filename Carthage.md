@@ -16,4 +16,7 @@ open -a Xcode Cartfile
 
 github "drmohundro/SWXMLHash" ~> 4.0
 
-carthage update
+carthage update --platform iOS
+
+
+
