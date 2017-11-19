@@ -25,3 +25,5 @@ past problems:
           pod install
 
 
+
+          open -a TextEdit Podfile
