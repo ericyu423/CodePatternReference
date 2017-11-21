@@ -11,3 +11,25 @@
     
 right click on *
 x == 5 // debug mode program break at x == 5
+
+
+/************************************************************/
+//switch for kotlin
+
+   var x = 5
+
+    when(x){
+
+        1 -> {
+            print("is one")
+        }
+        2 -> {
+            print("is two")
+        }
+        3 -> {
+            print("is three")
+        }
+        else -> {
+            print("default")
+        }
+    }
