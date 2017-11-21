@@ -1,3 +1,55 @@
+Interface and protcol
+
+similiar
+
+in Kotlin
+Interface Example {
+    fun sum(n1:Int,n2:Int);
+    fun div(n1:Int,n2:Int){ print("do something here}
+}
+
+class UserOp:op{
+    override fun sum(n1: Int, n2: Int) {
+            println("sum" + n1 + n2)
+    }
+
+    override fun div(n1: Int, n2: Int) {
+        println("div:" + n1/n2)
+
+    }
+
+
+}
+
+protocol Example{
+    func sum(n1:Int,n2:Int)->Int
+    func div(n1:Int,n2:Int)->Int
+}
+extension Example{
+    func div(n1:Int,n2:Int)->Int{
+       return n1 / n2
+    }
+}
+
+class ViewController: UIViewController,Example {
+    func sum(n1: Int, n2: Int) -> Int {
+        return n1 + n2
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        let me = div(n1: 4, n2: 2)
+        print(me)
+  
+    }
+
+}
+
+
+
+
+
 override in same package
 Kotlin
 * class can be inherited only if is marked open
