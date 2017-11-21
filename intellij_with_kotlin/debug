@@ -14,7 +14,7 @@ x == 5 // debug mode program break at x == 5
 
 
 /************************************************************/
-//switch for kotlin
+//same as switch in swift
 
    var x = 5
 
@@ -33,3 +33,31 @@ x == 5 // debug mode program break at x == 5
             print("default")
         }
     }
+/**************************************************************/
+
+    var n1 = 10
+    var n2 = 20
+    var max = if (n1>n2) n1 else n2   //   max = n1>n2 ? n1:n2     (in swift)
+    
+    print("max $max")
+    
+    
+ /************************************************************/
+ 
+ //this one doesn't seem like it have a swift equivalent
+
+ 
+ var isYoung = when(age){
+        30-> true
+        else->false
+  }
+  print(isYoung) //true
+ 
+ 
+ /****/
+ 
+ for (index in 1..5){
+    print(index) // 1, 2, 3, 4, 5, 
+ }
+    
+    
