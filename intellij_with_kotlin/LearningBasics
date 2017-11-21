@@ -186,3 +186,36 @@ fun main(arg:Array<String>){
    testFunc()
 }
     
+
+
+fun show(name: String) {
+    print("name" + name)
+}
+
+fun show(name: Double) {
+    print("name" + name)
+}
+
+/**************************************************************/
+    polmorphism (over load function with different data type)
+/**************************************************************/
+
+fun main(arg:Array<String>){
+    show("me")
+    show(2.0)
+}
+/**************************************************************/
+    polmorphism (over load function with different data type)
+/**************************************************************/
+side note: I always wonder why class arn't declare like functions...
+           but I guess this can be super confusing for beginners that dont' quite get OOP yet.
+
+class Car(a: String,b: Int){
+    init{
+        println(a)
+        print(b)
+    }
+}
+fun main(arg:Array<String>){
+    var car = Car("a",1)
+}
