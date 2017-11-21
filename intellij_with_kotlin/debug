@@ -55,9 +55,134 @@ x == 5 // debug mode program break at x == 5
  
  
  /****/
+ work exactly the same in swift
  
  for (index in 1..5){
     print(index) // 1, 2, 3, 4, 5, 
  }
     
+ /******/
+ continue
+ 
+ for (count in 1..10){
+      if (count == 4) {
+          continue
+      }
+      print(count)  
+  }
+  
+  //1235678910  no 4
+  
+  
+  //almost exactly the same one extra . in swift
+  
+  for count in 1...10{
+    if (count == 4) {
+        continue
+    }
+    print(count)
+}
+/*************************************************/
+//break loop
+
+    name@ for (count in 1..10){
+        for (count2 in 1..5) {
+            println(count)
+            if(count2 ==2){
+                break@name
+            }
+        }
+    }
+    
+//swift break loop    
+    
+    name: for count in 1...10{
+        for count2 in 1...5 {
+        print(count)
+        if(count2 == 2){
+            break name
+        }
+    }
+}
+    
+/*************************************************/
+//dictionary /hashmap
+
+  var dict = HashMap<Int,String>()
+
+    dict.put(1, "a")
+    dict.put(2, "b")
+    dict.put(3, "c")
+
+ //print everything out
+   for(k in dict.keys){
+        println(dict.get(k))
+    }
+    
+    //in swift
+        var dict = [Int:String]()
+
+        dict[0] = "a"
+        dict[1] = "b"
+        dict[2] = "c"
+
+        for key in dict.keys {
+                print(dict[key]!)
+        }
+        
+  //kotlin initialize collection 
+  //note mutable list and a simple listOf is different
+  // <Int> is probably there to tell you how many bits are allocated of each item (link list)
+  
+        var map = hashMapOf(1 to "a",2 to "b")
+       println(map.get(1))// hashmap initialize with value
+
+       var ar = arrayOf(1,10,22,11) //array of 4 element
+       println(ar[2])
+
+       var arl = listOf(1,10,22,11)
+       var arm = mutableListOf<Int>(1,10,22,11)
+
+       //arl.add fails
+       arm.add(99999)
+       //println(arl[3])
+       println(arm[4])
+
+/************************************/
+search in collection
+
+arraylist.contains("something")  //this return true or false
+
+
+//swift
+var dict:[Int:String] = [1:"a",2:"b"]
+
+if (dict.contains { (k,v) -> Bool in
+    v == "b"
+}){
+    print("have b")
+}
+
+/******
+
+var x = setOf(1,2,3,4,4)
+var y = mutableSetOf(1,2,3,4,4)
+x.add //doens't work
+y.add(5)
+
+ var x = setOf(1,2,3,4,4,4,4,4)
+    print(x.size) // 4, repeating elements get ignored
+
+
+/************************/
+functions
+
+//func testFunc():Unit  ...unit can be ignored and still compiles
+    print("do nothing pretty much")
+}
+
+fun main(arg:Array<String>){
+
+   testFunc()
+}
     
