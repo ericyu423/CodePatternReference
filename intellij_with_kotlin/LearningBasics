@@ -219,3 +219,13 @@ class Car(a: String,b: Int){
 fun main(arg:Array<String>){
     var car = Car("a",1)
 }
+
+/**************************************************************/
+   constructors / init
+/**************************************************************/
+
+class Car() {
+  //might think oif it as inherit from car() (self)
+   Constructor(number: Int):this(){
+   }
+}
