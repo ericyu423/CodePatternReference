@@ -1,0 +1,7 @@
+func getSize() ->(weight: Double, height: Double){
+    return (250,80)
+}
+let x = getSize()
+
+print(x.weight) //or
+print(getSize().height)
