@@ -1,0 +1,27 @@
+# index string in Swift 4          
+          
+          
+          var str = "Hello playground"
+
+          let firstCharacterIndex = str.startIndex
+          let fourthCharacterIndex = str.index(firstCharacterIndex, offsetBy: 3)
+          let fourthCharacter = str[fourthCharacterIndex] //I
+
+          //let test = str[3] //'subscript' is unavailable
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+          if let firstSpace = str.index(of: " "){
+              let secondWordIndex = str.index(firstSpace, offsetBy: 1)
+              let secondWord = str[secondWordIndex..<str.endIndex]
+
+              print(secondWord) //playground
+          }
+          
+          
+          
+this above is equal to use a high level function
+
+let x = str.components(separatedBy: " ")[1]
+
