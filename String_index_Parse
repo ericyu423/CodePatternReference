@@ -23,5 +23,14 @@
           
 this above is equal to use a high level function
 
-let x = str.components(separatedBy: " ")[1]
+let x = str.components(separatedBy: " ")[1] //this might be empty which will give you an error
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+you can also loop through string 
+
+          for c in str {
+          }
+          
+          let myAraay = Array(str)
 
