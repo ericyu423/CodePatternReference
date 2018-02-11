@@ -49,3 +49,8 @@ what if there is an array of Cards
 # use . for getter and setters [] for method
 
 note: you can use . notation for methods that takes no argument, but don't do that
+
+
+# make optional arugments for functions
+
+	create mutiple functions with same name with 1, 2 , 3... arguments. They are actually distinct
