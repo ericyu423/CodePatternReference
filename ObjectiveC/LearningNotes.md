@@ -54,3 +54,9 @@ note: you can use . notation for methods that takes no argument, but don't do th
 # make optional arugments for functions
 
 	create mutiple functions with same name with 1, 2 , 3... arguments. They are actually distinct
+	
+# Property in .m file
+	put in .h file is same as 
+	public in swift
+	while put in .m file is same as
+	private in swift
