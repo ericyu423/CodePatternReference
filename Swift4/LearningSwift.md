@@ -1,0 +1,15 @@
+
+#capture list
+
+var a = 0
+var b = 0
+
+let Closure: () -> () = { [a,b] in
+    print(a, b)
+}
+a=1
+b=2
+
+Closure()
+
+this prints 0,0, we already capture (made copy of )a, b values 
