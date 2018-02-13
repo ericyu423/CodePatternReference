@@ -63,7 +63,22 @@ note: you can use . notation for methods that takes no argument, but don't do th
 # atomic vs non-atomic (use nonatomic)
 	atomic let you deal with multiple threads with locking
 	non-atomic you can use it in one thread
-# Strong vs Weak reference
+# Strong vs Weak reference (same as swift)
 	strong reference meanings holding on to the object, as long as you or anyone else hold on to it, it won't get destroy
 	weak reference means touching the object sort of, you can do everythign the same as strong, however,
 	if someone else let go, it will get destroyed.
+	
+# side note (swift owned -  sort of like weak) NON OPTIONAL 
+	owned always have a value (not optional)
+
+
+	two classes where one can not exist without another.
+	vistor hold strong reference to annual pass
+	person hold strong rerference to credit card
+	
+	credit card, annual pass are two thing created by the vistor or person
+	so both annual pass or credit card are owned pointer back to visitor.
+	
+	A unowned reference must be set during initialization
+	
+#	
