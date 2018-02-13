@@ -60,3 +60,10 @@ note: you can use . notation for methods that takes no argument, but don't do th
 	public in swift
 	while put in .m file is same as
 	private in swift
+# atomic vs non-atomic (use nonatomic)
+	atomic let you deal with multiple threads with locking
+	non-atomic you can use it in one thread
+# Strong vs Weak reference
+	strong reference meanings holding on to the object, as long as you or anyone else hold on to it, it won't get destroy
+	weak reference means touching the object sort of, you can do everythign the same as strong, however,
+	if someone else let go, it will get destroyed.
