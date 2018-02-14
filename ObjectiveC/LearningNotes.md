@@ -83,3 +83,37 @@ note: you can use . notation for methods that takes no argument, but don't do th
 	
 # function -  class function + (class method)
 
+# Init ObjectC compare to Swift
+
+		- (instancetype)init{
+		    self = [super init];
+		    if (self){
+			for (NSString *suit in [PlayingCard validSuits]){
+			    for (NSUInterger rank = 1; rank <= [PlayingCard maxRank]; rank++) {
+				PlayingCard *card = [[PlayingCard alloc] init];
+				card.rank = rank;
+				card.suit = suit;
+				[self addCard:card];
+			    }
+			}
+
+		    }
+		    return self;
+		}
+		
+   #SWIFT
+
+		   init() {
+		    super.init()
+
+		    for suit: String in PlayingCard.validSuits() {
+			for rank in 1...PlayingCard.maxRank() {
+			    let card = PlayingCard()
+			    card.rank = rank
+			    card.suit = suit
+			    add(card)
+			   }
+		       }
+		   }
+
+
