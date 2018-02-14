@@ -69,7 +69,7 @@ note: you can use . notation for methods that takes no argument, but don't do th
 	if someone else let go, it will get destroyed.
 	
 # side note (swift owned -  sort of like weak) NON OPTIONAL 
-	owned always have a value (not optional)
+	unowned always have a value (not optional)
 
 
 	two classes where one can not exist without another.
