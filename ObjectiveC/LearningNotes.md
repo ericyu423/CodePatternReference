@@ -81,4 +81,5 @@ note: you can use . notation for methods that takes no argument, but don't do th
 	
 	A unowned reference must be set during initialization
 	
-#	
+# function -  class function + (class method)
+
