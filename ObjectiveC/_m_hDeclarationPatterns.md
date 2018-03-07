@@ -1,3 +1,22 @@
+# standford lecture
+
+          .m file
+          
+          @interface Deck()
+          @property (strong, nonatomic) NSMutableArray *card;//I guess this is where you declare private properties
+          @end
+          @implementation Deck
+          
+          //this works like lazy in swift
+          - (NSMutableArray *)cards
+          {       //getter              = [[NSMutableArray alloc]init]; // work the same as new
+                    if (!_cards) _cards = [NSMutableArray new];
+                    return _card; //point at null adddress ,the above line will give it an address
+          }
+          
+          
+
+
 source https://stackoverflow.com/questions/13263229/objective-c-instance-variables
 
 
