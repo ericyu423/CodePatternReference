@@ -20,7 +20,7 @@
 source https://stackoverflow.com/questions/13263229/objective-c-instance-variables
 
 
-# In new Objective C in done in implementation with complete block. In older version is in Interface
+# Implementation with complete block. In older version is in Interface
 
           
 
@@ -37,7 +37,7 @@ source https://stackoverflow.com/questions/13263229/objective-c-instance-variabl
           @end
           
           
-          
+          in .h
            @interface Someclass : NSObject {
 
                 NSString *nsstringInInterface;
@@ -46,7 +46,10 @@ source https://stackoverflow.com/questions/13263229/objective-c-instance-variabl
 
           @end
 
-#  older project are done different so in a large project when code are not properly updated is a mess
+
+
+
+
 
 
 
