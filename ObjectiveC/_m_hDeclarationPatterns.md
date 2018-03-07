@@ -1,4 +1,4 @@
-# standford lecture
+# Lazy initiation
 
           .m file
           
