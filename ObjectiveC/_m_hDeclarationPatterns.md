@@ -1,3 +1,22 @@
+# IBOutlet/IBActoin
+
+          seem like old way was declare in .h
+          but newer version we put it under .m
+          
+          @interface Myclass()
+          @property (weak, nonatomic) IBOulet UILabel....
+          @end
+          
+          @implenetation Myclass
+          -(IBAction)someActionThatGotDraggedhere:(UIButton *) sender
+          {
+          
+          }
+          
+          
+
+
+
 # Lazy initiation
 
           .m file
