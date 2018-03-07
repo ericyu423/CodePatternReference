@@ -1,3 +1,35 @@
+source https://stackoverflow.com/questions/13263229/objective-c-instance-variables
+
+
+# In new Objective C in done in implementation with complete block. In older version is in Interface
+
+          
+
+          In  .m file
+          @interface SomeClass ()<somethingDelegate>
+          @end
+
+          @implementation Someclass{
+                    NSString *nsstringUnderInimplementation;
+          };
+
+          -(void)methodsAndSuch {}
+
+          @end
+          
+          
+          
+           @interface Someclass : NSObject {
+
+                NSString *nsstringInInterface;
+
+          }
+
+          @end
+
+#  older project are done different so in a large project when code are not properly updated is a mess
+
+
 
 source:https://stackoverflow.com/questions/2571518/class-variable-defined-at-implementation-rather-than-interface
 
