@@ -9,6 +9,10 @@
 
         [dinnerRequest enumerateKeysAndObjectsUsingBlok: ^(id key, id value, BOOL *stop) {
                                                           NSLog(@"key: %@, value: %@\n",key,value);
+                                                          if (some condition){
+                                                                   *stop = true; //stop enumerating
+                                                          }
+                                                          
                                                           ];
                                                  //print out all pairs
                                                  
@@ -32,7 +36,17 @@
                   }
 
 
+# some cool things you can do passing stuff to an address
 
+                        var myDict: NSMutableDictionary = ["Don":"tofurkey","Sandy":"burrito","julius":"Chicken"]
+
+
+                                myDict.enumerateKeysAndObjects{ (a,b,c) in
+                                    print(a)
+
+                                   if ((a as! String) == "Sandy"){
+                                        print(c.pointee = true)}
+                                }
 
 
 
