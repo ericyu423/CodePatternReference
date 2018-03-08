@@ -1,3 +1,23 @@
+
+# alloc vs malloc
+
+malloc you need to know exactly the size using sizeof
+
+alloc will do it automatically for you, u don't need to know the size of what your obj might be.
+
+
+# free vs ARC
+
+'malloc' need to be 'free', ARC do it automatically for you
+
+# Old vs New
+
+printf -> NSLog
+char * -> NSString (NSString international characters)
+malloc -> alloc
+free   -> ARC
+
+
 heapMemory(review)
 
 
