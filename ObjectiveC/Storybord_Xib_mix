@@ -1,0 +1,19 @@
+# how to mix them
+
+# example In App Delegate.  name of stordboard is Introduction, identifier have to manually input to the first controller
+
+
+       UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Introduction" bundle:nil];
+       UIViewController *vc = [storyboard instantiateViewControllerWithIdentifier:@"viewController"];
+       self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+       self.window.rootViewController = vc;
+       
+       UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Introduction" bundle:nil];
+       UIViewController *vc = [sb instantiateViewControllerWithIdentifier:@"myViewController"];
+       vc.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
+       [self presentViewController:vc animated:YES completion:NULL];
+       
+       
+       
+ Is almost exactly like Swift.
+    
