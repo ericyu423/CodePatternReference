@@ -1,0 +1,9 @@
+# very easy
+
+
+     step 1. create a new ViewController in storyboard
+     step 2. go to xib file root View (ctrl-C)
+     step 3. go to step1 viewcontroller select the base View (ctrl-V)
+     
+     
+    
