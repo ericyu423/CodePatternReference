@@ -1,3 +1,35 @@
+
+# Example block with name, pretty much you pass in the the stuff to block it runs it
+
+                void (^myblock)(id,NSUInterger index,BOOL *);
+
+                myBlock = (id x, NSUInterger  y, BOOL *z){
+
+                };
+
+                [myNSArray enumerateObjectUsingBlock:myBlock];
+  
+  
+ 
+
+
+
+
+
+
+
+
+
+
+# block type signature
+        int intName;
+        void (^blockName)(id,id);
+        
+        
+        int intName = 5;
+        void(^blockName)(id,id) = ^(id x,id y){//do stuff here};
+
+
 # callbackblock
 
         NSMutableDictionary *dinnerRequest = [NSMutableDictionary 
