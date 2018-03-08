@@ -10,3 +10,5 @@
 
 
 //so only print when is debugging
+
+# In debugger(po) p *object, will show the thing in the object
