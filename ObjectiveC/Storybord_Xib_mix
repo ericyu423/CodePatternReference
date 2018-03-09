@@ -1,5 +1,22 @@
 # how to mix them
 
+# example 
+
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Introduction" bundle:nil];
+        UIViewController *vc = [storyboard instantiateInitialViewController];
+        
+        //if storyboard an arrow point to a controller (initial vc) that above code with initialize it.
+        //make the first one navigation if you want to write code for view transitions
+        
+        
+        self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+        self.window.rootViewController = vc;
+        
+        
+     
+    
+
+
 # example In App Delegate.  name of stordboard is Introduction, identifier have to manually input to the first controller
 
 
@@ -17,7 +34,4 @@
        
  Is almost exactly like Swift.
  
- # inside storyboard
  
-       don't forget to embeded in navigation viewcontroller or else you will have to manually write the transtions animations
-    
