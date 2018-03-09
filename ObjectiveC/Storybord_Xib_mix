@@ -16,4 +16,8 @@
        
        
  Is almost exactly like Swift.
+ 
+ # inside storyboard
+ 
+       don't forget to embeded in navigation viewcontroller or else you will have to manually write the transtions animations
     
