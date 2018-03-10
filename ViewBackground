@@ -1,0 +1,9 @@
+# Image,Label
+
+
+UIIMage v ,  v.background = v.background
+
+
+UILable v ,  v.background != v.layout.background 
+ 
+ for uilabel if corner radius is changed, it will not affect the regular background
