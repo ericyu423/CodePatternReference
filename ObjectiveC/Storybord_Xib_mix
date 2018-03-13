@@ -1,5 +1,18 @@
 # how to mix them
 
+# pushing next viewcontroller in code
+
+note:
+
+unlike when every viewcontroller layout is done in code, if vc layout is in storyboard, you need to call storyboard
+to get the layout otherwise you just get a blank page
+
+
+                        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Introduction" bundle:nil];
+                        UIViewController *vc = [storyboard instantiateViewControllerWithIdentifier:@"SuccessMessageViewController"];
+                        [self.navigationController pushViewController:vc animated:YES];
+
+
 # example 
 
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Introduction" bundle:nil];
