@@ -1,3 +1,13 @@
+
+
+# debugger sometimes swift syntax (dot notation) doen't work 
+
+ 	po indexPath.row <--- gives error
+	
+	po [indexPath row]
+ 
+
+
 Reason: Maintaining an App using ObjC
 
 
