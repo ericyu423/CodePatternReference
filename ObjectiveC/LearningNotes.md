@@ -1,6 +1,5 @@
 Reason: Maintaining an App using ObjC
 
-https://www.youtube.com/watch?v=KCnSIZ07QHg
 
       - (int)match:(Card *)card;
       
