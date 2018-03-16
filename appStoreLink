@@ -27,3 +27,9 @@ example code
 
 
                             [self presentViewController:storeVC animated:YES completion:nil];
+
+
+# use this to dimiss
+- (void)productViewControllerDidFinish:(SKStoreProductViewController *)viewController {
+    [viewController dismissViewControllerAnimated:YES completion:NULL];
+}
