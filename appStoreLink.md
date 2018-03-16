@@ -9,6 +9,8 @@ step1.   import StoreKit/and to link library
 
 example code
 
+                           add <SKStoreProductViewControllerDelegate> to VC
+
 
                           SKStoreProductViewController *storeVC = [ SKStoreProductViewController new];
                              
@@ -29,7 +31,7 @@ example code
                             [self presentViewController:storeVC animated:YES completion:nil];
 
 
-# use this to dimiss
-- (void)productViewControllerDidFinish:(SKStoreProductViewController *)viewController {
-    [viewController dismissViewControllerAnimated:YES completion:NULL];
-}
+                                # use this to dimiss
+                                - (void)productViewControllerDidFinish:(SKStoreProductViewController *)viewController {
+                                    [viewController dismissViewControllerAnimated:YES completion:NULL];
+                                }
