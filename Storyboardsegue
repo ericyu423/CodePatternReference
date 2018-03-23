@@ -1,0 +1,30 @@
+
+
+The following calls the segue, if you dont' have a button link directly to the next Viewcontroller
+            
+            [self performSegueWithIdentifier:@"Measure" sender:self];
+        
+TO pass varibles to next view Controller, do the following pattern
+
+
+
+          - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+          {
+              if ([[segue identifier] isEqualToString:@"New"])
+              {
+                  NewAppLeadViewController *leadViewWhatsnew = segue.destinationViewController;
+                  leadViewWhatsnew.leadTypeNum=0;
+              }else if([[segue identifier] isEqualToString:@"Measure"]){
+                  NewAppLeadViewController *leadViewHowToMeasure = segue.destinationViewController;;
+                  leadViewHowToMeasure.leadTypeNum = 2;
+              }
+          }
+          
+          
+          
+well this code actually help me clearfied when exactly I should use segue to pass a varible.
+
+it seems to me that passing a certain state is a good idea to use segue
+while passing say..data should probably use something else like a delegate 
+it is probalby to unit test it that way
+       
