@@ -1,5 +1,8 @@
 # frequently used
 
+# unless you are creating 2 classes in a same file and want them to share a function and no one else there is no point for fileprivate
+
+            //file 1.swift
             extension ViewController {
                 func start3(){
                     print(myfileprivate) //works same file
@@ -17,6 +20,12 @@
                     vc.setupInputFields()//fileprivate works, a private within the same file
                 }
             }
+            
+            
+            
+            
+            
+            //file 2.swift
             class test2 {
                 var vc = ViewController()
                 func start(){
