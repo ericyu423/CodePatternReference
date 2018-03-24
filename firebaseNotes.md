@@ -17,4 +17,21 @@
             
             print("Successfully created user:",user?.uid ?? "")
         }
+        
+        if email or password is missing error will actually tell you
+        
+        
+# step5. go back to firebase console (webpage) enable email authentication  
+
+    discover firebase -> Authentication(get started) -> Setup sign in method ->
+    
+    enable email
+    
+    (look like we also have option to sign up with phone, goolge, facebook, twitter ..ect)
+    
+# step6. 
+        Authentication user tap can see registered users.
+        error will show if user try to register with same email twice.
+        
+        
     
