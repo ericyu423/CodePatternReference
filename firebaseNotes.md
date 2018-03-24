@@ -1,7 +1,7 @@
 # step 1. create new proj following directions (download GoogleService-Info.plist), (add proj id)
 # step 2. init pod, add 
 
-     pod 'Firebase/Auth'
+    pod 'Firebase/Auth'
   	pod 'Firebase/Database'
  	pod 'Firebase/Storage'
         
