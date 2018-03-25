@@ -1,3 +1,6 @@
+//https://firebase.google.com/docs/reference/swift/firebasedatabase/api/reference/Classes/DatabaseReference
+
+
 # step 1. create new proj following directions (download GoogleService-Info.plist), (add proj id)
 # step 2. init pod, add 
 
@@ -68,3 +71,72 @@ to write user we can use userid as a key (id from registration)
            
            Users
               |----- EauBZjGwYVRaWWknsq0bYSSlmgw1:1
+              
+ # setValue replace everything under Users
+ 
+            so if we write again using
+            
+            let value = [uid: ["username" : "eric"]
+            Database.database().reference().child("users").setValue(value, withCompletionBlock: { (error, ref) in
+                
+                if let error = error {
+                    print("failed to save user info to db",error)
+                    return
+                }
+                
+                print("Successfully saved user info to db")
+                
+              })//Database.database() ends
+              
+              
+     we end up with     
+     
+            Users
+             |----afioj2fopfa;wkdfjaks;dfj;kljafds
+                            |-------- username : "eric"
+                            
+     the previous user and data and replace by the new structure
+     
+     
+ # if we want update use updateChildValues(_:)
+ 
+                users
+                  |--  EouBZJGwYVRaWWinsq0bYSSlmgw2:1
+                  |--  F4uk08QzWGe3mMQf4QAmDlKzCby2
+                                |-----  username: "myNameIsEric"
+                                
+            
+            let another = ["layer":"saveSomethingElse"]
+            let dict = ["username":another]
+            let value = [uid: dict]
+            
+            // this is to go to database  /users/ folder
+            Database.database().reference().child("users").updateChildValues(value, withCompletionBlock: { (error, ref) in
+                
+                if let error = error {
+                    print("failed to save user info to db",error)
+                    return
+                }
+                
+                print("Successfully saved user info to db")
+            })//Database.database() ends
+                
+  Add another layer
+  
+                    
+                users
+                  |--  EouBZJGwYVRaWWinsq0bYSSlmgw2:1
+                  |--  F4uk08QzWGe3mMQf4QAmDlKzCby2
+                  |             |-----  username: "myNameIsEric"
+                  |              
+                  |--g5ErwMhgMKWvPmawzQ1RzviyKWl2
+                                 |-----  username
+                                            |-----  layer: "saveSomethingElse"
+
+      
+                
+            
+                             
+
+
+            
