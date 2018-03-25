@@ -261,3 +261,45 @@ to write user we can use userid as a key (id from registration)
                 
    let username = dictionary["username"] as? String 
    use key username to get the value Ericyu33
+
+
+
+# Example fetching username and get the image  (2 step process)
+
+                guard let uid = Auth.auth().currentUser?.uid else { return }
+                        Database.database().reference().child("users").child(uid).observeSingleEvent(of: .value, with: { 
+                        (snapshot) in  //.value = Any data changes at a location or, recursively, at any child node
+                         
+                            guard let dictionary = snapshot.value as? [String: Any] else { return }
+                            self.user = User(dictionary: dictionary)
+  
+                        })  { (err) in
+                            print("Failed to fetch user:", err)
+                        }
+                    }//fetchUser() ends
+                    
+                    
+              user now have a username and a image url
+              
+take image URL and do the following to get image     
+
+
+                        guard let profileImageUrl =  //get from the user truct else {return}
+                        guard let url = URL(string: profileImageUrl) else { return }
+                        URLSession.shared.dataTask(with: url) { (data, response, err) in
+                            //check for the error, then construct the image using data
+                            if let err = err {
+                                print("Failed to fetch profile image:", err)
+                                return
+                            }
+                            guard let data = data else { return }
+                            let image = UIImage(data: data)
+
+                            DispatchQueue.main.async {  //get back onto the main UI thread and update it
+                                self.profileImageView.image = image  
+                            }
+                        }.resume()
+                        
+                        
+                        
+              
