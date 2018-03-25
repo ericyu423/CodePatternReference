@@ -154,6 +154,15 @@ to write user we can use userid as a key (id from registration)
             
   * metadata?.downloadURL()?.absoluteString  return s the url 
   * profile_image is put in storage with no folder structure right now
+  
+# storage image will file structure
+
+   add child("profile_images").child(filename)
+   
+   child basically = to  "/"  so we now have a  /profile_images/ folder
+   inside the profile_image folder we have a file
+   18EFEDA1-51D1-4A0D-A4C9-4B7DD836AB04 (uuid we generated which is our picture)
+  
             
             
             
