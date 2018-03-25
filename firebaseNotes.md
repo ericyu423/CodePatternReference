@@ -168,6 +168,55 @@ to write user we can use userid as a key (id from registration)
   
             
             
+# connect Database and storage by storeing url to database
+
+    Auth.auth().createUser(withEmail: email, password: password) { (user, error ) in
+            if let error = error { print("Failed to create user:",error)}
+            print("Successfully created user:",user?.uid ?? "")
             
+
+            guard let image = self.photoButton.imageView?.image else { return }
+            
+            guard let uploadData = UIImageJPEGRepresentation(image, 0.3) else {return} //30% original
+            let filename = UUID().uuidString
+            Storage.storage().reference().child("profile_images").child(filename).putData(uploadData, metadata: nil, 
+             completion: { (metadata, error) in
+                
+                if let error = error {
+                    print("Failed to upload profil image:",error)
+                    return
+                }
+                guard let profileImageUrl = metadata?.downloadURL()?.absoluteString else {return}
+                print("Successfully uploaded profil image:",profileImageUrl)
+                
+                guard let uid = user?.uid else {return}
+                let dictValues = ["username":username,"profileImageUrl": profileImageUrl]
+                let value = [uid:dictValues]
+                
+                
+                Database.database().reference().child("users").updateChildValues(value, withCompletionBlock: { (error, ref) in
+                    
+                    if let error = error {
+                        print("failed to save user info to db",error)
+                        return
+                    }
+                    
+                    print("Successfully saved user info to db")
+                    
+                })//Database.database() ends
+
+            }) //storage().reference().child ends
+ 
+        }//Auth.auth().createUser ends
+    
+    }
+
+
+
+
+gBpaM41CZjSL9JMQP05ctZY6l2r1
+            |---profileImageUrl: "https://firebasestorage.googleapis.com/v0/b/soc..."
+            |----username: "Ericyu33"
+
 
             
