@@ -219,4 +219,45 @@ to write user we can use userid as a key (id from registration)
             |----username: "Ericyu33"
 
 
+# Get current user
+
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+         
+         Database.database().reference().child("users").child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
+            print(snapshot.value ?? "")
             
+            guard let dictionary = snapshot.value as? [String: Any] else { return }
+            
+            let username = dictionary["username"] as? String
+            self.navigationItem.title = username
+            
+        }) //observersingleEvent ends
+        { (err) in
+            print("Failed to fetch user:", err)
+        }//closure ends
+        
+        
+ this go to 
+ database ----child-> users directory  ----child---->  uid (gBpaM41CZjSL9JMQP05ctZY6l2r1) 
+ and get a snapshot it will be in key value pair
+ 
+            
+        gBpaM41CZjSL9JMQP05ctZY6l2r1
+            |---profileImageUrl: "https://firebasestorage.googleapis.com/v0/b/soc..."
+            |----username: "Ericyu33"
+            
+            
+            
+  dictionary will look like 
+
+              po dictionary
+            ▿ 2 elements
+              ▿ 0 : 2 elements
+                - key : "username"
+                - value : Ericyu33
+              ▿ 1 : 2 elements
+                - key : "profileImageUrl"
+                - value : https://firebasestorage.googleapis.com/v0/b/socialme.....
+                
+   let username = dictionary["username"] as? String 
+   use key username to get the value Ericyu33
