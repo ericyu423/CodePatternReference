@@ -137,6 +137,25 @@ to write user we can use userid as a key (id from registration)
                 
             
                              
+# storage image and get image url (make sure to allow firebase storage first (database and storage are different) )
 
+                Storage.storage().reference().child("profile_image").
+                putData(uploadData, metadata: nil, completion: { (metadata, error) in
+                
+                if let error = error {
+                    print("Failed to upload profil image:",error)
+                    return
+                }
+                guard let profileImageUrl = metadata?.downloadURL()?.absoluteString else {return}
+                
+                print("Successfully uploaded profil image:",profileImageUrl)
+            }) //storage().reference().child ends
+            
+            
+  * metadata?.downloadURL()?.absoluteString  return s the url 
+  * profile_image is put in storage with no folder structure right now
+            
+            
+            
 
             
