@@ -214,7 +214,7 @@ to write user we can use userid as a key (id from registration)
 
 
 
-gBpaM41CZjSL9JMQP05ctZY6l2r1
+        gBpaM41CZjSL9JMQP05ctZY6l2r1
             |---profileImageUrl: "https://firebasestorage.googleapis.com/v0/b/soc..."
             |----username: "Ericyu33"
 
