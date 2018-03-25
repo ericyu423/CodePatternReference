@@ -35,3 +35,36 @@
         
         
     
+
+
+# write stuff to database
+
+the database have a structure of
+
+Databasename (whatever you name your project)
+        Users  (user directory to save data for a particular user)
+        
+        
+to write user we can use userid as a key (id from registration)        
+
+
+
+            let value = [uid: 1]  //userID = EauBZjGwYVRaWWknsq0bYSSlmgw1
+
+            
+            // this is to go to database  /users/ folder
+            Database.database().reference().child("users").setValue(value, withCompletionBlock: { (error, ref) in
+                
+                if let error = error {
+                    print("failed to save user info to db",error)
+                    return
+                }
+                
+                print("Successfully saved user info to db")
+                
+              })//Database.database() ends
+        
+  we end up with
+           
+           Users
+              |----- EauBZjGwYVRaWWknsq0bYSSlmgw1:1
