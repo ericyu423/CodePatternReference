@@ -306,5 +306,18 @@ take image URL and do the following to get image
 
          if Auth.auth().currentUser == nil {}
          
+# sign in      
+
+                guard let email = emailTextField.text else {return}
+                guard let password = passwordTextField.text else {return}
+
+                Auth.auth().signIn(withEmail: email, password: password, completion: { (user, error) in
+
+                    if let error = error {
+                        print("Failed to sign in with email:",error)
+                        return
+                    }
+                })
+         
      
               
