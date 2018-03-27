@@ -301,5 +301,10 @@ take image URL and do the following to get image
                         }.resume()
                         
                         
-                        
+# simple check to see if user is currently login
+    check see if there is a current user  
+
+         if Auth.auth().currentUser == nil {}
+         
+     
               
