@@ -1,5 +1,5 @@
             
-            
+# keyWindow holds all the UI, keyWindow?.rootViewController is the root if set initially in appDelegate
             
             
             guard let mainTabBarController  = UIApplication.shared.keyWindow?.rootViewController as?
