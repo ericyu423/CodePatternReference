@@ -1,0 +1,23 @@
+# when tabselected abBarController will be called
+
+UITabBarControllerDelegate
+
+
+
+
+        override func viewDidLoad() {
+             super.viewDidLoad()
+             self.delegate = self
+        }
+
+# this disable the 3rd tabbar button (so it will not light up)
+
+
+        UITabBarControllerDelegate {
+            func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController)-> Bool {
+                let index = viewControllers?.index(of: viewController)
+                  if index == 2 {
+                      return false
+                  }
+                  return true
+        }
