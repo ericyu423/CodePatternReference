@@ -83,3 +83,14 @@
                     }
 
 
+<p align="center">
+<img src="https://github.com/ericyu423/CodePatternReference/blob/master/image/collectionViewWithLine.png" width="300"/>
+</p>
+  
+# add insect to have a line that seperate header view
+
+      func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, 
+                          insetForSectionAt section: Int) -> UIEdgeInsets {
+            return UIEdgeInsets(top: 1, left: 0, bottom: 0, right: 0)
+        }
+  
