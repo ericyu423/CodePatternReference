@@ -1,5 +1,15 @@
 //https://firebase.google.com/docs/reference/swift/firebasedatabase/api/reference/Classes/DatabaseReference
 
+Strange problem with firebase, one morning it just give error saying "Undeclared Identifier 'Auth'"
+
+fix.
+
+1. in terminal go to proj folder
+2. run (rvm use ruby-2.4.0 --default) for some reason only 2.4.0 work on my
+3. pod repo update
+4. pod upate
+
+
 
 # step 1. create new proj following directions (download GoogleService-Info.plist), (add proj id)
 # step 2. init pod, add 
