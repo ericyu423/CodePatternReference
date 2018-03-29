@@ -93,4 +93,43 @@
                           insetForSectionAt section: Int) -> UIEdgeInsets {
             return UIEdgeInsets(top: 1, left: 0, bottom: 0, right: 0)
         }
-  
+        
+        
+# add customer cells (can be done in xib or storyboard)
+
+ step1.   change 
+ 
+        collectionView?.register(UICollectionViewCell.self, forCellWithReuseIdentifier: cellId)
+        collectionView?.register(PhotoSelectorCell.self, forCellWithReuseIdentifier: cellId)
+        
+ step2.  add as! PhotoSelectorCell, this make cell a instance of PhotoSelectorCell instead of the generic  
+         UICollectionViewCell and assign photoImageView to it
+ 
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! PhotoSelectorCell
+        cell.photoImageView.image = image[indexPath.item]
+
+
+ *step0 photoSelectorCell (anchor is from an extesnion for UIView)
+ 
+            class PhotoSelectorCell:UICollectionViewCell{
+                let photoImageView: UIImageView = {
+                    let iv = UIImageView()
+                    iv.backgroundColor = .lightGray
+                    return iv
+                }()
+                override init(frame: CGRect){
+                    super.init(frame:frame)
+                    addSubview(photoImageView)
+                    photoImageView.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor,
+                    paddingTop:0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0)
+                }
+                required init?(coder aDecoder: NSCoder) {
+                    fatalError("init(coder:) has not been implemented")
+                }
+            }
+            
+            
+# AspectFill (allow photo to have the right ratio..which means the picture can fall outside of the cell
+
+        iv.contentMode = .scaleAspectFill //expand out side the bounds
+        iv.clipsToBounds = true //cut the boarder
