@@ -1,0 +1,4 @@
+
+remove all but numbers
+
+currentRate.replacingOccurrences(of: "[^1234567890]", with: "" ,options: [.regularExpression])
