@@ -133,3 +133,8 @@
 
         iv.contentMode = .scaleAspectFill //expand out side the bounds
         iv.clipsToBounds = true //cut the boarder
+        
+# scroll to top when one of the cell is clicked
+
+        let indexPath = IndexPath(item: 0, section: 0)
+        collectionView.scrollToItem(at: indexPath, at: .bottom, animated: true)
