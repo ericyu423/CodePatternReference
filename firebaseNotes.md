@@ -165,6 +165,9 @@ to write user we can use userid as a key (id from registration)
   * metadata?.downloadURL()?.absoluteString  return s the url 
   * profile_image is put in storage with no folder structure right now
   
+  
+
+  
 # storage image in a file structure
 
    add child("profile_images").child(filename)
@@ -256,7 +259,34 @@ to write user we can use userid as a key (id from registration)
         .reference().child("posts").child(fileName) this create a subfolder called posts and place fileName inside the folder
 
 
+# save image in storage and file metadata is database
 
+
+            fileprivate func saveToDatabaseWithImageUrl(imageUrl:String){
+                    guard let postImage = selectedImage else {return}
+                    guard let caption = textView.text else {return}
+
+                    guard let uid = Auth.auth().currentUser?.uid else {return}
+
+                    let userPostRef =  Database.database().reference().child("posts").child(uid)
+
+                    let ref = userPostRef.childByAutoId()
+                    let values = ["imageUrl":imageUrl,"caption":caption,"imageWidth":   
+                     postImage.size.width,"imageHeight":postImage.size.height,"creationDate":Date().timeIntervalSince1970] as [String: Any]
+
+                    ref.updateChildValues(values) { (error, ref) in
+                        if let error = error {
+                            print("Failed to save post to DB",error)
+                        }
+                        print("successfully saved post to DB")
+                    }
+
+                }
+
+
+<p align="center">
+<img src="https://github.com/ericyu423/CodePatternReference/blob/master/image/imageTree1.png" width="300"/>
+</p>
 
 
 # Get current user
