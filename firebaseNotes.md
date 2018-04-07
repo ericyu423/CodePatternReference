@@ -175,6 +175,7 @@ to write user we can use userid as a key (id from registration)
    
    so in firebase under storage we can click on profile_images, and it will open another page and show all the files
    that we saved
+   
   
             
             
@@ -227,6 +228,35 @@ to write user we can use userid as a key (id from registration)
         gBpaM41CZjSL9JMQP05ctZY6l2r1
             |---profileImageUrl: "https://firebasestorage.googleapis.com/v0/b/soc..."
             |----username: "Ericyu33"
+
+# storage image example 2
+
+ 
+            @objc private func handleShare(){
+                guard let image = selectedImage else { return }
+
+                guard let uploadData = UIImageJPEGRepresentation(image, 0.5) else { return }
+                let fileName = NSUUID().uuidString
+                Storage.storage().reference().child("posts").child(fileName).putData(uploadData, metadata: nil) { 
+                        (metaData, error) in
+
+                    if let error = error {
+                        print("Failed to upload post image:",error)
+                        return
+                    }
+
+                    guard let imageUrl = metaData?.downloadURL()?.absoluteString else { return }
+                    print("succesfully uploaded image",imageUrl)
+
+                }
+            }
+
+* note: imageGetComprassed to uploadData, fileName created using uuid (pretty standard stuff but you can name them whatever you want), once is sucessful uploaded you get a return url address
+* note: .reference().child(filenmae) this create a file name under the root directory
+        .reference().child("posts").child(fileName) this create a subfolder called posts and place fileName inside the folder
+
+
+
 
 
 # Get current user
