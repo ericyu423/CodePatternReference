@@ -1,0 +1,155 @@
+Purpose:
+  setup React for iOS and Andriod in Mac
+  setup ESLint (bug checking for javascript)
+
+
+Dependencies needed
+
+  1. xcode
+
+  2. homeBrew - use to install Node
+
+  3. Node/NPM - runs javascript outside of the brower.
+              - NPM is used for installing and managing dependencies
+              - Node and NPM come together
+  4. watchman  - watch files on the hard drive and waits for them to change
+ 
+  5. RN CLI  - React native Command Line Interface. Used to generate new React native projects.
+  
+  
+ 
+ Step 1. Install/update xcode
+ Step 2. Install homebrew https://brew.sh/  "/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+"
+ Step 3. Install node - first check "node -v" if you installed it previously if not "brew install node"
+ step 4. install watchman - facebook program to watch harddeive changes "brew install watchman"
+          -this step might take a while-
+          
+ step 5. install react  npm install -g react-native-cli  
+  
+              npm WARN checkPermissions Missing write access to /usr/local/lib/node_modules
+              npm ERR! path /usr/local/lib/node_modules
+              npm ERR! code EACCES
+              npm ERR! errno -13
+              npm ERR! syscall access
+              npm ERR! Error: EACCES: permission denied, access '/usr/local/lib/node_modules'
+              npm ERR!  { Error: EACCES: permission denied, access '/usr/local/lib/node_modules'
+              npm ERR!   stack: 'Error: EACCES: permission denied, access \'/usr/local/lib/node_modules\'',
+              npm ERR!   errno: -13,
+              npm ERR!   code: 'EACCES',
+              npm ERR!   syscall: 'access',
+              npm ERR!   path: '/usr/local/lib/node_modules' }
+              npm ERR! 
+              npm ERR! Please try running this command again as root/Administrator.
+
+              npm ERR! A complete log of this run can be found in:
+              npm ERR!     /Users/ericyu423/.npm/_logs/2018-05-13T17_50_05_716Z-debug.log
+              
+          fix above by adding "sudo" 
+          "sudo npm install -g react-native-cli"
+          
+ step 6. start a project.
+           1. create a folder where you want to start your project and cd to it.
+           2  react-native init [name]  example: "react-native init albums"   //create project named albums
+           
+           3. errors again
+           
+
+                      Consider installing yarn to make this faster: https://yarnpkg.com
+                      WARN notice [SECURITY] lodash has 1 low vulnerability. Go here for more details: https://nodesecurity.io/advisories?search=lodash&version=3.10.1 - Run `npm i npm@latest -g` to upgrade your npm version, and then `npm audit` to get more info.
+                      WARN notice [SECURITY] ws has 1 high vulnerability. Go here for more details: https://nodesecurity.io/advisories?search=ws&version=2.3.1 - Run `npm i npm@latest -g` to upgrade your npm version, and then `npm audit` to get more info.
+
+                      > fsevents@1.2.3 install /Users/ericyu423/Desktop/ReactNative/Projs/albums/node_modules/fsevents
+                      > node install
+
+                      [fsevents] Success: "/Users/ericyu423/Desktop/ReactNative/Projs/albums/node_modules/fsevents/lib/binding/Release/node-v57-darwin-x64/fse.node" already installed
+                      Pass --update-binary to reinstall or --build-from-source to recompile
+                      npm notice created a lockfile as package-lock.json. You should commit this file.
+                      npm WARN react-native@0.55.4 requires a peer of react@16.3.1 but none is installed. You must install peer dependencies yourself.
+                      npm WARN eslint-plugin-react-native@3.2.1 requires a peer of eslint@^3.17.0 || ^4.0.0 but none is installed. You must install peer dependencies yourself.
+
+                      + react-native@0.55.4
+                      added 766 packages in 21.318s
+                      Setting up new React Native app in /Users/ericyu423/Desktop/ReactNative/Projs/albums
+                      Installing React...
+                      npm WARN eslint-plugin-react-native@3.2.1 requires a peer of eslint@^3.17.0 || ^4.0.0 but none is installed. You must install peer dependencies yourself.
+
+                      + react@16.3.1
+                      added 1 package in 4.528s
+                      Installing Jest...
+                      npm WARN eslint-plugin-react-native@3.2.1 requires a peer of eslint@^3.17.0 || ^4.0.0 but none is installed. You must install peer dependencies yourself.
+
+                      + react-test-renderer@16.3.1
+                      + jest@22.4.3
+                      + babel-jest@22.4.3
+                      + babel-preset-react-native@4.0.0
+                      added 299 packages and updated 1 package in 11.395s
+                      To run your app on iOS:
+                         cd /Users/ericyu423/Desktop/ReactNative/Projs/albums
+                         react-native run-ios
+                         - or -
+                         Open ios/albums.xcodeproj in Xcode
+                         Hit the Run button
+                      To run your app on Android:
+                         cd /Users/ericyu423/Desktop/ReactNative/Projs/albums
+                         Have an Android emulator running (quickest way to get started), or a device connected
+                         react-native run-android
+
+           4 brew install yarn
+           5. 2nd try: react-native init albums
+           
+           
+    step 6. go to albums proj directory run simulator
+    
+         a. react-native run-ios //run on ios simulator  (this take a while)
+         
+         b. react-native run-android // this will not work additional setups are needed
+              step a. open andriod studio 
+                   b. open existing proj
+                   c. go to alumbs project folder (or where the react proj fold u just created)
+                   d. open the andriod folder
+                     error: missing platform
+                     click on the blue link and andriod will automatically install and update what is needed
+                     
+                     you will see another error in andriod studio. 
+                     Failed to find Build Tools revision 23.0.1
+                     
+                     
+                      Install Build Tools 23.0.1 and sync project <--click on this 
+                      
+                      
+                      another warning asking to upgrade gradle <- click ignore this for this project
+                      
+         c. now setup the emulator that we can use     
+          andriod studio -> tool -> android -> avd manager -> create an andriod device -> select default 5.2" Nexus 5x
+          
+          select OS api 24 ...lowest recommanded version
+          
+          done setup -> Nexus 5X API 24 -> run emulator click on > button
+          
+          d. terminal react-native run-android...
+          
+          error: Skipping device 'emulator-5554' (emulator-5554): Device is UNAUTHORIZED
+          
+          solution: close emulator 
+          
+          e. cd /Users/ericyu423/Library/Android/sdk
+          add path
+            echo ‘export PATH=$PATH:/Users/ericyu423/Library/Android/sdk/platform-tools’ >> ~/.bash_profile
+            
+            ...doesn't work
+            
+          f. ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+             brew cask install android-platform-tools
+
+
+             adb kill-server
+             
+             your virtual device -> whip data in andriod 
+             
+             
+          finally: go back to the proj folder /albums and type react-native run-android (works now)
+             
+             
+
+          
