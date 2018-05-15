@@ -1,18 +1,39 @@
-        //import library
-        import React from 'react';
-        import { Text } from 'react-native';
-        //make component
+# layout
 
-        const Header = () => {
-          const { textStyle } = styles;  //set property
-          return <Text style={textStyle}>Eric Alubms!</Text>;
-        };
+        default: upper left
+        
+        justifyContent: 'flex-start' // upper left same as default
+                        'flex-end'  // vertical bottom position in container
+                        'center'    // center vertically in container
+                        
+                        
+        alignItems: 'flex-start'
+                    'center'
+                    'flex-end'
+                    
+        height: 60,
+        paddingTop: 15,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        elevation: 2,
+        position: 'relative'
 
-        const styles = {  //style
-          textStyle: {
-            fontSize: 20
-          }
-        };
 
-        //make component available to other parts of the app
-        export default Header;
+
+# passing data
+        //index.js
+        
+        const App = () => <Header headerText={'Erics Albums'} />;
+        
+        //header.js
+         const Header = props => {
+          const { textStyle } = styles;
+          return (
+            <View style={styles.viewStyle}>
+              <Text style={textStyle}>{props.headerText}</Text>;
+            </View>
+           );
+          };
+          
+          
