@@ -20,24 +20,10 @@
  
  
              {data: Array(5), status: 200, statusText: undefined, headers: {…}, config: {…}, …}
-            config
-            :
-            {adapter: ƒ, transformRequest: {…}, transformResponse: {…}, timeout: 0, xsrfCookieName: "XSRF-TOKEN", …}
-            data
-            :
-            (5) [{…}, {…}, {…}, {…}, {…}]
-            headers
-            :
-            {x-content-type-options: "nosniff", server: "Cowboy", connection: "keep-alive", x-rack-cors: "preflight-hit; no-origin", vary: "Origin", …}
-            request
-            :
-            XMLHttpRequest {UNSENT: 0, OPENED: 1, HEADERS_RECEIVED: 2, LOADING: 3, DONE: 4, …}
-            status
-            :
-            200
-            statusText
-            :
-            undefined
-            __proto__
-            :
-            Object
+            config:{adapter: ƒ, transformRequest: {…}, transformResponse: {…}, timeout: 0, xsrfCookieName: "XSRF-TOKEN", …}
+            data:(5) [{…}, {…}, {…}, {…}, {…}]
+            headers:{x-content-type-options: "nosniff", server: "Cowboy", connection: "keep-alive", x-rack-cors: "preflight-hit; no-origin", vary: "Origin", …}
+            request:XMLHttpRequest {UNSENT: 0, OPENED: 1, HEADERS_RECEIVED: 2, LOADING: 3, DONE: 4, …}
+            status:200
+            statusText:undefined
+            __proto__:Object
