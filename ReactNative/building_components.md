@@ -1,3 +1,7 @@
+# debug
+        iOS cmd+d remote JS Debuggin
+        
+
 # layout
 
         default: upper left
@@ -21,7 +25,7 @@
 
 
 
-# passing data
+# passing data : a lot create an instance and set value in Swift/Objc
         //index.js
         
         const App = () => <Header headerText={'Erics Albums'} />;
