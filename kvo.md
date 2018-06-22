@@ -42,3 +42,69 @@ example 2.
           my value 12
           my value 13
           my value 16
+
+exampe from apple:
+
+                class MyObjectToObserve: NSObject {
+                    @objc dynamic var myDate = NSDate(timeIntervalSince1970: 0) // 1970
+                    func updateDate() {
+                        myDate = myDate.addingTimeInterval(Double(2 << 30)) // Adds about 68 years.
+                    }
+                }
+                class MyObserver: NSObject {
+                    @objc var objectToObserve: MyObjectToObserve
+                    var observation: NSKeyValueObservation?
+
+                    init(object: MyObjectToObserve) {
+                        objectToObserve = object
+                        super.init()
+
+                        observation = observe(
+                            \.objectToObserve.myDate,
+                            options: [.old, .new]
+                        ) { object, change in
+                            print("myDate changed from: \(change.oldValue!), updated to: \(change.newValue!)")
+                        }
+                    }
+                }
+                let observed = MyObjectToObserve()
+                let observer = MyObserver(object: observed)
+                observed.updateDate()
+                
+                
+ example apple test:
+ 
+                 import UIKit
+
+                class ViewModel: NSObject {
+                    @objc dynamic var myDate = "monday"
+                    func updateDate() {
+                        myDate = "tuesday"
+                    }
+                }
+                class MyObserver: NSObject {
+                    @objc var objectToObserve: ViewModel
+                    var observation: NSKeyValueObservation?
+
+                    init(object: ViewModel) {
+                        objectToObserve = object
+                        super.init()
+
+                        observe(
+                            \.objectToObserve.myDate,
+                            options: [.old, .new]
+                        ) { object, change in
+                            print("myDate changed from: \(change.oldValue!), updated to: \(change.newValue!)")
+                        }
+
+                //        observation = observe(
+                //            \.objectToObserve.myDate,
+                //            options: [.old, .new]
+                //        ) { object, change in
+                //            print("myDate changed from: \(change.oldValue!), updated to: \(change.newValue!)")
+                //        }
+                    }
+                }
+                let observed = ViewModel()
+                let observer = MyObserver(object: observed)
+                observed.updateDate()
