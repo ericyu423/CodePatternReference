@@ -108,3 +108,38 @@ exampe from apple:
                 let observed = ViewModel()
                 let observer = MyObserver(object: observed)
                 observed.updateDate()
+  example observe webpage loading
+  
+                import UIKit
+                import WebKit
+
+                class ViewController: UIViewController {
+
+                    var seaWebView: WKWebView!
+                    let keyPathToObserve:String = "estimatedProgress"
+                    let urlString = "https://cnn.com"
+
+                    override func viewDidLoad() {
+                        super.viewDidLoad()
+                        self.seaWebView = WKWebView()
+                        self.view = seaWebView
+                        self.seaWebView.addObserver(self, forKeyPath: keyPathToObserve, options: .new, context: nil)
+                        loadPage()
+                    }
+
+                    func loadPage() {
+                        guard let url = URL(string: urlString) else { return }
+                        let urlRequest = URLRequest(url: url)
+                        self.seaWebView.load(urlRequest)
+                    }
+
+                    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+                        if keyPath == keyPathToObserve {
+                            print("Loaded \(self.seaWebView.estimatedProgress*100)%")
+                        }
+                    }
+
+                    deinit {
+                        self.seaWebView.removeObserver(self, forKeyPath: keyPathToObserve, context: nil)
+                    }
+                }
