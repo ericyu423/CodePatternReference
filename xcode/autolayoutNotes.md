@@ -5,3 +5,9 @@ edit reverse item
 constraint = 0
 ratio 3:1
 
+
+
+<p align="center">
+  <img src= "https://github.com/ericyu423/CodePatternReference/blob/master/image/exampleAutoLayout.png" width="400"/>
+</p>
+
