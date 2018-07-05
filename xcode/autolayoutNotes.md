@@ -8,6 +8,6 @@ ratio 3:1
 
 
 <p align="center">
-  <img src= "https://github.com/ericyu423/CodePatternReference/blob/master/image/exampleAutoLayout.png" width="400"/>
+  <img src= "https://github.com/ericyu423/CodePatternReference/blob/master/image/exampleAutoLayout.png" width="600"/>
 </p>
 
