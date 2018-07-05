@@ -1,0 +1,12 @@
+# CodeExample
+
+Basic Code Pattern For Most Frequent Use Situation, and Variation 
+
+
+
+
+After put image in the folder the following code can be use to insert images
+
+<p align="center">
+  <img src= "https://github.com/ericyu423/CodePatternReference/blob/master/image/exampleAutoLayout.png" width="400"/>
+</p>
