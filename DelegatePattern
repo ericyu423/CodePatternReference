@@ -1,0 +1,32 @@
+example 
+
+in .h file
+@protocol FuniturePopOverViewDelegate <NSObject>
+-(void) onPopUpClicked:(NSString *) name note: (NSString *) note;
+@end
+
+@interface FurniturePopoverViewControllerNoImage : UIViewController
+@property (nonatomic,weak) id<FuniturePopOverViewDelegate> delegate;
+@end
+
+
+
+.m file
+
+  [self.delegate onPopUpClicked:self.name note:self.note]; this pass data to delegate
+  
+  
+  
+  
+  In the view controller you want to recevied the "call"
+  
+  <FuniturePopOverViewDelegate>
+  
+  
+  //set instance of your class.delegate to self
+   self.furniturePopoverViewNoImage.delegate = self;
+  
+  -(void)onPopUpClicked:(NSString *)name note:(NSString *)note{
+    //whenever FurniturePopoverViewControllerNoImage run [self.delegate onPopUpClicked:self.name note:self.note];
+    //this function will become active
+}
