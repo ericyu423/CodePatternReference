@@ -1,0 +1,3 @@
+
+NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+BOOL isDecimal = [formatter numberFromString:newString] != nil;
