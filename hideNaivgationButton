@@ -1,0 +1,4 @@
+func hideNameForLeftNavigationButton()
+    {
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem()
+    }
