@@ -1,0 +1,9 @@
+-(void)dissolveTransition: (UIView *) view hide:(BOOL)setHidden{
+    [UIView transitionWithView:view
+                      duration:1.0f
+                       options:UIViewAnimationOptionTransitionCrossDissolve
+                    animations:^{
+                        [view setHidden: setHidden];
+                    } completion:nil];
+    
+}
