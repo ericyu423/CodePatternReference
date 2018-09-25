@@ -1,0 +1,12 @@
+clang/link error
+Xcode
+
+1. read the error message, delete simulator files might fix this
+2. if using cocopods, delete podlock and pod folder and reinstall podfile
+3. when updating cocopods old branches might have old linter files, go to build setting and delete them all and merge with the 
+    updated branch can cure it.
+    
+    
+    
+Chalres proxy, location "*" <-- this something get added by itself, probably a system bug, it will stop certain data flow, 
+                in my case crahlytic is blocks and the app will just keep try to load itself.
