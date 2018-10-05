@@ -1,0 +1,13 @@
+func delay(withTime: Double, callback: @escaping () -> Void) {
+    let when = DispatchTime.now() + withTime
+    DispatchQueue.main.asyncAfter(deadline: when) {
+        callback()
+    }
+}
+
+
+double delayInSeconds = 0.5; // set the time
+dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+  // do something here        
+});
