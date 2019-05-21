@@ -1,0 +1,1508 @@
+Summary of what I've learned 5/21/2019
+
+1. self.automaticallyAdjustsScrollViewInsets = false in viewWillAppear is important to keep background full page
+(else you get top margin spacing sometimes)
+
+2. override var supportedInterfaceOrientations this only work if "Require full screen" box is checked (main target -> general)
+
+3. scaleToFill vs AspectFill, AspectFill will ressult in cut off on top if the background image doesn't fit the screen
+
+4. iphone XR uses @2x image even though is similar size as XS Max
+
+5. protocol extension plus inheritance is a good combination to keep code clean, if all the code is in parent class
+
+===================
+
+
+
+import Foundation
+import UIKit
+
+struct EXPFrontDoorCarouselPageModel
+{
+    let header: String
+    let subheader: String
+    let headerImage: String
+    let centerImage: String
+    
+    let backgroundImage: String
+    let backgroundImageIPad: String
+    let backgroundImageShort: String
+    let backgroundContainerFrameName: String =  "productIllustrationModule"
+    
+    let icon1name: String =  "reportIcon"
+    let icon2name: String =  "rocketIcon"
+    let icon3name: String =  "ccIcon"
+    let icon4name: String =  "monitoringIcon"
+    
+    static func fetchBackgroundImageAssetBaseOnScreenDimension(page: EXPFrontDoorCarouselPageModel) -> UIImage
+    {
+        let isiPad = UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad
+        let isiPhonePlus = UIScreen.main.bounds.height == 736
+        let isiPhone5 = UIScreen.main.bounds.height == 568
+        let isiPhone = UIScreen.main.bounds.height == 667
+        
+        let image: UIImage!
+        
+        if isiPad
+        {
+            image = UIImage(named: page.backgroundImageIPad)
+        }
+        else if isiPhonePlus || isiPhone5 || isiPhone
+        {
+            image = UIImage(named: page.backgroundImageShort)
+        }
+        else
+        {
+            image = UIImage(named: page.backgroundImage)
+        }
+        
+        return image
+    }
+    
+    static func getDefaultPages() -> [EXPFrontDoorCarouselPageModel]
+    {
+        return
+            [
+                EXPFrontDoorCarouselPageModel(header: "", subheader: "Where you take control and make the most of your credit.", headerImage: "experianLogo", centerImage: "", backgroundImage: "fdPage1", backgroundImageIPad: "fdPage1Ipad", backgroundImageShort: "fdPage1S"),
+                
+                EXPFrontDoorCarouselPageModel(header: "Experian Credit Report\r& FICO® Score for Free", subheader: " See where you stand and\rwhat's affecting your credit.", headerImage: "", centerImage: "coloredCreditSummary", backgroundImage: "fdPage1", backgroundImageIPad: "fdPage1Ipad", backgroundImageShort: "fdPage1S"),
+                
+                EXPFrontDoorCarouselPageModel(header: "Experian Boost", subheader: "Give your FICO® Score\ra boost, instantly.", headerImage: "", centerImage: "coloredBoost", backgroundImage: "fdPage2", backgroundImageIPad: "fdPage2Ipad", backgroundImageShort: "fdPage2S"),
+                
+                EXPFrontDoorCarouselPageModel(header: "Experian CreditMatch", subheader: "Find better credit cards based\non your FICO® Score.", headerImage: "", centerImage:  "cardMatch", backgroundImage: "fdPage3", backgroundImageIPad: "fdPage3Ipad", backgroundImageShort: "fdPage3S"),
+                
+                EXPFrontDoorCarouselPageModel(header: "Monitoring & Alerts", subheader: "Get notified of changes to your\rCredit Report and FICO® Score.", headerImage: "", centerImage: "coloredAlerts", backgroundImage: "fdPage4", backgroundImageIPad: "fdPage4Ipad", backgroundImageShort: "fdPage4S"),
+        ]
+    }
+}
+
+//MARK: Collection View Setup
+
+class EXPFrontDoorCarouselViewController: EXPViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout,EXPSharedFrontDoorLayoutConstants,EWSignupManagerDelegate
+{
+    let typeACellId: String! = "FrontDoorCarouselTypeACell"
+    let typeBCellId: String! = "FrontDoorCarouselTypeBCell"
+    let typeCCellId: String! = "FrontDoorCarouselTypeCCell"
+    let typeDCellId: String! = "FrontDoorCarouselTypeDCell"
+    
+    let pages: [EXPFrontDoorCarouselPageModel]! = EXPFrontDoorCarouselPageModel.getDefaultPages()
+    let numberOfPages: Int = 5
+    let timerInterval: Double = 5.0
+    var timer:Timer!
+
+    var collectionView: UICollectionView!
+    var scrollView : UIScrollView!
+    var collectionViewFlowLayout: UICollectionViewFlowLayout!
+    var pageControl: UIPageControl!
+    var signInButton: UIButton!
+    var joinForFreeButton: UIButton!
+    var buttonContainerStackView: UIStackView!
+    var buttonContainerView: UIView!
+    var collectionBackgroundImage: UIImageView!
+    var centerImageViewFrame: UIImageView!
+    var centerImageView: UIImageView!
+    var headerLabel: UILabel!
+    var subheaderLabel:UILabel!
+    var currentPageNumber: Int! = 0
+    
+    @objc func pageControllerTapped()
+    {
+        currentPageNumber = pageControl.currentPage
+        collectionView.scrollToItem(at: IndexPath(item: currentPageNumber, section: 0), at: .centeredHorizontally, animated: true)
+    }
+    
+    @objc func signupButtonPressed()
+    {
+        EWDarcManager.shared.sendTrackLinkEvent(ECWDarcSignInTrackLink.FRONT_DOOR_SIGN_IN)
+        ECWAnalyticsHelper.sharedInstance.logEvent("Front Door - Sign in", withParameters: nil)
+        Clickstream.logEvent(ClickstreamEventType.trackLink, withParameters: [
+            CLICKSTREAM_ATTR_NAV_TAG_PAGE_ID: CLICKSTREAM_CONST_PAGEID_SIGNUP_LANDING_VIDEO_PAGE,
+            CLICKSTREAM_ATTR_TRACKLINK_TAG_IDENTIFIER: CLICKSTREAM_CONST_TRACKLINK_IDENTIFIER_SIGNUP_ALREADY_HAVE_ACCOUNT,
+            CLICKSTREAM_ATTR_TRACKLINK_TAG_PLACEMENT: CLICKSTREAM_CONST_TRACKLINK_PLACEMENT_SIGNUP_ALREADY_HAVE_ACCOUNT,
+            CLICKSTREAM_ATTR_TRACKLINK_TAG_TYPE: CLICKSTREAM_CONST_TRACKLINK_TYPE_OTHER
+            ])
+        
+        let signInVC = (EXPConstants.sharedInstance() as! EXPBusConstants).signInSB()!.instantiateInitialViewController()!
+        self.navigationController?.pushViewController(signInVC, animated: true)
+    }
+    
+    @objc func joinForFreeButtonTapped()
+    {
+        EWDarcManager.shared.sendTrackLinkEvent(ECWDarcSignInTrackLink.FRONT_DOOR_JOIN_NOW)
+        Clickstream.logEvent(ClickstreamEventType.trackLink, withParameters: [
+            CLICKSTREAM_ATTR_NAV_TAG_PAGE_ID: CLICKSTREAM_CONST_PAGEID_SIGNUP_LANDING_VIDEO_PAGE,
+            CLICKSTREAM_ATTR_TRACKLINK_TAG_IDENTIFIER: CLICKSTREAM_CONST_TRACKLINK_IDENTIFIER_SIGNUP_JOINFORFREE,
+            CLICKSTREAM_ATTR_TRACKLINK_TAG_PLACEMENT: CLICKSTREAM_CONST_TRACKLINK_PLACEMENT_SIGNUP_JOINFORFREE,
+            CLICKSTREAM_ATTR_TRACKLINK_TAG_TYPE: CLICKSTREAM_CONST_TRACKLINK_TYPE_OTHER
+            ])
+
+        ECWAnalyticsHelper.sharedInstance.logEvent("Front Door - Join", withParameters: nil)
+        
+        guard let commonWebService: EWCoreWebService = ECWAppData.sharedInstance.commonWebService else
+        {
+            return
+        }
+        
+        if(self.navigationController != nil)
+        {
+            EXPOAuthTokenFactory.resetAnonymousToken()
+            EXPOAuthTokenFactory.resetRegistrationToken()
+            EWSpinner.showSpinnerOnMainThread(text: "", didShow: nil)
+            
+            let requestTokenWS = EXPDataSource.getProxyFor(EXPWebServiceCorvRequestToken.self) as AnyObject
+            let requestRegistrationTokenWS = EXPDataSource.getProxyFor(EXPWebServiceCorvRequestRegistrationToken.self) as AnyObject
+            
+            requestTokenWS.sendAsynchronousRequest(successHandler: { response, responseData in
+                requestRegistrationTokenWS.sendAsynchronousRequest(successHandler: { response, responseData in
+                    
+                    EWSpinner.hideSpinnerOnMainThread(didHide: nil)
+                    let configData = EWSignupManagerConfigData(webServiceInstance: commonWebService, navigationController: self.navigationController!, productName: kRegistrationProductName, appName: kECWRegistrationAppIdentifierForGraphQl, parentDelegate: self )
+                    
+                    configData.inactiveTimeoutNotificationNameString = EXP_USER_TOUCH_TIMEOUT
+                    EWSignupManager.sharedInstance.pushNewUserRegistration(signupConfigData: configData)
+                    
+                }, failureHandler: { error in
+                    self.closeSpinnerAndShowErrorAlert(error: error)
+                })
+            }, failureHandler: { error in
+                self.closeSpinnerAndShowErrorAlert(error: error)
+            })
+        }
+    }
+    
+    func closeSpinnerAndShowErrorAlert(error: Error?)
+    {
+        EWSpinner.hideSpinnerOnMainThread(didHide: nil)
+        EXPWebService.presentAlert(from: self, forError: error, withDefaultTitle: "Error", defaultMessage: "Sorry, there was an error processing your request.", defaultButtonText: "OK", onComplete: nil)
+    }
+    
+    func segueToRegistrationCompleteFlowUserNotLoggedIn(username: String, password: String)
+    {
+        EXPSignInFlowManager.segueToRegistrationCompleteFlow(username: username, password: password, controller: self, parentNavigationController: self.navigationController!)
+    }
+    
+    func segueToRegistrationCompleteFlowUserLoggedIn(username: String) {
+        EXPSignInFlowManager.segueToRegistrationCompleteFlow(username: username, controller: self, parentNavigationController: self.navigationController!)
+    }
+    
+    func segueToRegistrationFailedFlow(username: String?)
+    {
+        EXPSignInFlowManager.segueToRegistrationFailedFlow(username: username ?? "")
+    }
+   
+    override func viewDidLoad()
+    {
+        super.viewDidLoad()
+        
+        self.analyticsScreenName = ECWDarcScreenName.entryScreen
+        
+ 
+        initializeVariables()
+        initializeStaticPageTwoLayerVariables()
+        
+        registerReusableCells()
+        
+        addSubviewsOnCurrentViewController()
+        addSubviewForPageTwoClone()
+    }
+    
+    override func viewWillAppear(_ animated: Bool)
+    {
+        super.viewWillAppear(animated)
+        makeFrontDoorViewFullPage()
+    }
+
+    func makeFrontDoorViewFullPage()
+    {
+        shouldDisableMenu = true
+        self.automaticallyAdjustsScrollViewInsets = false
+        self.navigationController?.navigationBar.isHidden = true
+    }
+    
+    override func viewWillDisappear(_ animated: Bool)
+    {
+        super.viewWillDisappear(animated)
+        self.navigationController?.navigationBar.isHidden = false
+        stopTimer()
+    }
+    
+    override func viewDidAppear(_ animated: Bool)
+    {
+        super.viewDidAppear(animated)
+        startTimer()
+    }
+    
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask
+    {
+        if isiPad
+        {
+            return .landscape
+        }
+        else
+        {
+            return .portrait
+        }
+    }
+
+    func addSubviewForPageTwoClone()
+    {
+        collectionView.backgroundView?.addSubview(headerLabel)
+        collectionView.backgroundView?.addSubview(subheaderLabel)
+        collectionView.backgroundView?.addSubview(centerImageViewFrame)
+        centerImageViewFrame.addSubview(centerImageView)
+    
+        layoutConstraintsPageTwoLayer()
+    }
+
+    func registerReusableCells()
+    {
+        collectionView.register(EXPFrontDoorCarouseTypeACell.self, forCellWithReuseIdentifier: typeACellId)
+        collectionView.register(EXPFrontDoorCarouseTypeBCell.self, forCellWithReuseIdentifier: typeBCellId)
+        collectionView.register(EXPFrontDoorCarouseTypeCCell.self, forCellWithReuseIdentifier: typeCCellId)
+        collectionView.register(EXPFrontDoorCarouseTypeDCell.self, forCellWithReuseIdentifier: typeDCellId)
+    }
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView)
+    {
+        let cells = collectionView!.visibleCells
+        let bounds = collectionView!.bounds
+        for cell in cells
+        {
+            if let cell =  cell as? Parallax
+            {
+                cell.updateParallaxOffset(collectionViewBounds: bounds)
+            }
+        }
+    }
+    
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>)
+    {
+        currentPageNumber = Int(targetContentOffset.pointee.x / view.frame.width)
+        pageControl.currentPage = currentPageNumber
+        ECWAnalyticsHelper.sharedInstance.logEvent("Front Door - Swipe", withParameters: nil)
+        startTimer()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int
+    {
+        return pages.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
+    {
+        let pageContent = pages[indexPath.item]
+        if indexPath.row == 0
+        {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: typeACellId, for: indexPath) as! EXPFrontDoorCarouseTypeACell
+            cell.pageContent = pageContent
+            return cell
+        }
+        else if indexPath.row == 1
+        {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: typeBCellId, for: indexPath) as! EXPFrontDoorCarouseTypeBCell
+            cell.pageContent = pageContent
+            return cell
+        }
+        else if indexPath.row == 2 || indexPath.row == 3
+        {
+            
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: typeCCellId, for: indexPath) as! EXPFrontDoorCarouseTypeCCell
+            cell.pageContent = pageContent
+            return cell
+        }
+        else
+        {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: typeDCellId, for: indexPath) as! EXPFrontDoorCarouseTypeDCell
+            cell.pageContent = pageContent
+            
+            return cell
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize
+    {
+        return CGSize(width: view.frame.width, height: view.frame.height)
+    }
+    
+    @objc func scrollToNextPage()
+    {
+        if currentPageNumber < numberOfPages - 1
+        {
+            currentPageNumber = currentPageNumber + 1
+            pageControl.currentPage = currentPageNumber
+            pageControl.updateCurrentPageDisplay()
+            self.collectionView.scrollToItem(at: IndexPath(item: self.currentPageNumber, section: 0), at: .centeredHorizontally, animated: true)
+        }
+    }
+    
+    func startTimer()
+    {
+        stopTimer()
+        self.timer = Timer.scheduledTimer(timeInterval: timerInterval, target: self, selector: #selector(scrollToNextPage), userInfo: nil, repeats: true);
+    }
+    
+    func stopTimer()
+    {
+        if timer != nil
+        {
+            timer.invalidate()
+            timer = nil
+        }
+    }
+}
+
+
+extension EXPFrontDoorCarouselViewController
+{
+    func addSubviewsOnCurrentViewController()
+    {
+        view.addSubview(collectionView)
+        view.addSubview(pageControl)
+        view.addSubview(buttonContainerView)
+        buttonContainerView.addSubview(buttonContainerStackView)
+        
+        layoutConstraintsForCollectionView()
+        layoutConstraintsForPageControl()
+        layoutConstraintsForButtonContainerView()
+    }
+    
+    func layoutConstraintsForCollectionView()
+    {
+        collectionView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
+        collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0 ).isActive = true
+        collectionView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
+        collectionView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
+    }
+    
+    func layoutConstraintsForPageControl()
+    {
+        pageControl.bottomAnchor.constraint(equalTo: buttonContainerView.topAnchor, constant: page_to_button_distance).isActive = true
+        pageControl.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
+        pageControl.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
+        pageControl.heightAnchor.constraint(equalToConstant: page_controler_height).isActive = true
+    }
+    
+    func layoutConstraintsForButtonContainerView()
+    {
+        if isiPad
+        {
+            buttonContainerView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -button_container_ipad_bottom_spacing).isActive = true
+            buttonContainerView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            buttonContainerView.widthAnchor.constraint(equalToConstant: button_container_width).isActive = true
+            buttonContainerView.heightAnchor.constraint(equalToConstant: button_container_height_ipad).isActive = true
+        }
+        else
+        {
+            if #available(iOS 11.0, *) {
+                buttonContainerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -button_container_edge).isActive = true
+            } else {
+                buttonContainerView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -button_container_ipad_bottom_spacing).isActive = true
+            }
+            buttonContainerView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: button_container_edge).isActive = true
+            buttonContainerView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -button_container_edge).isActive = true
+            buttonContainerView.heightAnchor.constraint(equalToConstant: button_container_height).isActive = true
+        }
+    }
+
+    func layoutConstraintsPageTwoLayer()
+    {
+        
+        if isiPad
+        {
+            headerLabel.topAnchor.constraint(equalTo: centerImageViewFrame.topAnchor, constant: -centerImage_to_header_distance).isActive = true
+            headerLabel.centerXAnchor.constraint(equalTo: collectionView.backgroundView!.centerXAnchor).isActive = true
+            headerLabel.widthAnchor.constraint(equalToConstant: label_width).isActive = true
+            subheaderLabel.topAnchor.constraint(equalTo: headerLabel.bottomAnchor, constant: label_spacing).isActive = true
+            subheaderLabel.centerXAnchor.constraint(equalTo: collectionView.backgroundView!.centerXAnchor).isActive = true
+            subheaderLabel.widthAnchor.constraint(equalToConstant: label_width).isActive = true
+            
+            headerLabel.heightAnchor.constraint(lessThanOrEqualToConstant: header_height_2_line).isActive = true
+            subheaderLabel.heightAnchor.constraint(lessThanOrEqualToConstant: sub_header_height_2_line).isActive = true
+        }
+        else
+        {
+            headerLabel.topAnchor.constraint(equalTo: centerImageViewFrame.topAnchor, constant: -centerImage_to_header_distance).isActive = true
+            headerLabel.centerXAnchor.constraint(equalTo: collectionView.backgroundView!.centerXAnchor).isActive = true
+            headerLabel.widthAnchor.constraint(equalToConstant: label_width_iphone).isActive = true
+            headerLabel.heightAnchor.constraint(lessThanOrEqualToConstant: label_height_max).isActive = true
+            
+            subheaderLabel.topAnchor.constraint(equalTo: headerLabel.bottomAnchor, constant: 8).isActive = true
+            subheaderLabel.centerXAnchor.constraint(equalTo: collectionView.backgroundView!.centerXAnchor).isActive = true
+            subheaderLabel.widthAnchor.constraint(equalToConstant: label_width_iphone).isActive = true
+            subheaderLabel.heightAnchor.constraint(equalToConstant: sub_header_height_iphone).isActive = true
+        }
+
+        if isiPad
+        {
+            centerImageViewFrame.heightAnchor.constraint(equalToConstant: centerImageViewFrame_height + frame_padding).isActive = true
+            centerImageViewFrame.widthAnchor.constraint(equalToConstant: centerImageViewFrame_width + frame_padding).isActive = true
+            centerImageViewFrame.centerXAnchor.constraint(equalTo: collectionView.backgroundView!.centerXAnchor).isActive = true
+            centerImageViewFrame.centerYAnchor.constraint(equalTo: collectionView.backgroundView!.centerYAnchor,constant: center_image_vertical_offset_ipad).isActive = true
+        }
+        else
+        {
+            centerImageViewFrame.centerYAnchor.constraint(equalTo: collectionView.backgroundView!.centerYAnchor,constant: center_image_vertical_offset).isActive = true
+            centerImageViewFrame.centerXAnchor.constraint(equalTo: collectionView.backgroundView!.centerXAnchor).isActive = true
+            centerImageViewFrame.widthAnchor.constraint(equalTo: collectionView.backgroundView!.widthAnchor, multiplier: image_to_screen_width_ratio).isActive = true
+            centerImageViewFrame.heightAnchor.constraint(equalTo: centerImageViewFrame.widthAnchor, multiplier: center_image_width_height_ratio).isActive = true
+        }
+        
+        centerImageView.topAnchor.constraint(equalTo: centerImageViewFrame.topAnchor, constant: frame_padding).isActive = true
+        centerImageView.leftAnchor.constraint(equalTo: centerImageViewFrame.leftAnchor, constant: frame_padding).isActive = true
+        centerImageView.rightAnchor.constraint(equalTo: centerImageViewFrame.rightAnchor, constant: -frame_padding).isActive = true
+        centerImageView.bottomAnchor.constraint(equalTo: centerImageViewFrame.bottomAnchor, constant: -frame_padding).isActive = true
+    }
+    
+    func initializeVariables()
+    {
+        collectionViewFlowLayout = UICollectionViewFlowLayout()
+        collectionViewFlowLayout.scrollDirection = .horizontal
+        collectionViewFlowLayout.minimumLineSpacing = 0
+        collectionViewFlowLayout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        
+        collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewFlowLayout)
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.isPagingEnabled = true
+        collectionView.backgroundColor = .white
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        
+        collectionBackgroundImage = UIImageView()
+        collectionBackgroundImage.image = EXPFrontDoorCarouselPageModel.fetchBackgroundImageAssetBaseOnScreenDimension(page: pages[0])
+        collectionView.backgroundView = collectionBackgroundImage
+        
+        pageControl = UIPageControl()
+        pageControl?.addTarget(self, action: #selector(pageControllerTapped), for: .valueChanged)
+        pageControl.pageIndicatorTintColor = .lightGray
+        pageControl.currentPageIndicatorTintColor = UIColor.experianPink()
+        pageControl.numberOfPages = numberOfPages
+        pageControl.translatesAutoresizingMaskIntoConstraints = false
+        
+        signInButton = UIButton(type: .system)
+        signInButton.setTitle(sign_in_button_text, for: .normal)
+        signInButton.titleLabel?.font = EWFontController.sharedInstance.font(forTextStyle: EWTextStyleBody2Regular)
+        signInButton.clipsToBounds = true
+        signInButton.setTitleColor(.white, for: .normal)
+        signInButton.backgroundColor = EXPConstants.Colors.formHeadingBlack
+        signInButton.addTarget(self, action: #selector(signupButtonPressed), for: .touchUpInside)
+        
+        joinForFreeButton = UIButton(type: .system)
+        joinForFreeButton.clipsToBounds = true
+        joinForFreeButton.titleLabel?.numberOfLines = 2
+        joinForFreeButton.titleLabel?.font = EWFontController.sharedInstance.font(forTextStyle: EWTextStyleBody2Regular)
+        
+        joinForFreeButton.setTitleColor(.white, for: .normal)
+        joinForFreeButton.titleLabel?.textAlignment = .center
+        joinForFreeButton.backgroundColor = UIColor.experianPink()
+        joinForFreeButton.setTitle(join_for_free_button_text, for: .normal)
+        joinForFreeButton.addTarget(self, action: #selector(joinForFreeButtonTapped), for: .touchUpInside)
+        
+        buttonContainerStackView = UIStackView(arrangedSubviews: [signInButton,joinForFreeButton])
+        buttonContainerStackView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        buttonContainerStackView.distribution = .fillEqually
+        buttonContainerStackView.axis = .horizontal
+        
+        buttonContainerView = UIView()
+        buttonContainerView.layer.cornerRadius = corner_radius_button
+        buttonContainerView.clipsToBounds = true
+        buttonContainerView.translatesAutoresizingMaskIntoConstraints = false
+    }
+    
+    func initializeStaticPageTwoLayerVariables()
+    {
+        centerImageViewFrame = UIImageView()
+        centerImageViewFrame.image = UIImage(named: pages[1].backgroundContainerFrameName)
+        centerImageViewFrame.contentMode = .scaleToFill
+        centerImageViewFrame.translatesAutoresizingMaskIntoConstraints = false
+        
+        centerImageView =  UIImageView()
+        centerImageView.image = UIImage(named: pages[1].centerImage)
+        centerImageView.contentMode = .scaleToFill
+        centerImageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        headerLabel = UILabel()
+        headerLabel.numberOfLines = 2
+        headerLabel.font = header_font
+        headerLabel.textColor = header_color
+        headerLabel.attributedText = EXPStrings.superScriptString(pages[1].header, stringToSuperScript: ["®"], font: headerLabel.font)
+        
+        headerLabel.textAlignment = .center
+        headerLabel.minimumScaleFactor = 0.5
+        headerLabel.adjustsFontSizeToFitWidth = true
+        headerLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        subheaderLabel = UILabel()
+        subheaderLabel.numberOfLines = 2
+        subheaderLabel.font = subheader_font
+        subheaderLabel.text = pages[1].subheader
+        subheaderLabel.textColor = subheader_color
+        subheaderLabel.textAlignment = .center
+        subheaderLabel.minimumScaleFactor = 0.5
+        subheaderLabel.adjustsFontSizeToFitWidth = true
+        subheaderLabel.translatesAutoresizingMaskIntoConstraints = false
+    }
+}
+
+//MARK: layout constants in protocol instead of parent class because is easier to read 
+
+
+protocol EXPSharedFrontDoorLayoutConstants
+{
+    var header_image_width: CGFloat { get }
+    var header_image_height: CGFloat { get }
+    var page1_subheader_width: CGFloat { get }
+    
+    var centerImageViewFrame_height: CGFloat { get }
+    var centerImageViewFrame_width: CGFloat { get }
+    var frame_padding: CGFloat { get }
+    var frame_center_offset: CGFloat { get }
+    
+    var label_width: CGFloat { get }
+    var label_top_padding: CGFloat { get }
+    var label_spacing: CGFloat { get }
+    
+    var header_height_1_line: CGFloat { get }
+    var header_height_2_line: CGFloat { get }
+    var sub_header_height_1_line: CGFloat { get }
+    var sub_header_height_2_line: CGFloat { get }
+    
+    var label_width_iphone: CGFloat { get }
+    var label_height_max: CGFloat { get }
+    
+    var isiPad:Bool { get }
+    var isiPhone5: Bool { get }
+    
+    var center_image_vertical_offset: CGFloat { get }
+    var centerImage_to_header_distance: CGFloat { get }
+    var sub_header_height_iphone: CGFloat { get }
+    
+    var subheader_font: UIFont { get }
+    var header_font: UIFont { get }
+    var header_color: UIColor { get }
+    var subheader_color: UIColor { get }
+    
+    var page_to_button_distance: CGFloat { get }
+    var page_controler_height: CGFloat { get }
+    
+    var button_container_width: CGFloat { get }
+    var button_container_edge: CGFloat { get }
+    var button_container_height: CGFloat { get }
+    var button_container_height_ipad: CGFloat { get }
+    var button_container_ipad_bottom_spacing: CGFloat { get }
+    
+    var stack_view_icon_width: CGFloat { get }
+    var stack_view_icon_space_width: CGFloat { get }
+    
+    var sign_in_button_text: String { get }
+    var join_for_free_button_text: String { get }
+    var corner_radius_button: CGFloat { get }
+}
+
+extension EXPSharedFrontDoorLayoutConstants
+{
+    var header_image_width: CGFloat { return 264 }
+    var header_image_height: CGFloat { return 85 }
+    var page1_subheader_width: CGFloat { return 258 }
+    
+    var centerImageViewFrame_height: CGFloat { return 380 }
+    var centerImageViewFrame_width: CGFloat { return 290 }
+    var frame_padding: CGFloat { return 20 }
+    var frame_center_offset: CGFloat { return 20 }
+    
+    var label_width: CGFloat { return 414 }
+    var label_top_padding: CGFloat { return 60 }
+    var label_spacing: CGFloat { return 8 }
+    
+    var header_height_1_line: CGFloat { return 38 }
+    var header_height_2_line: CGFloat { return 76 }
+    var sub_header_height_1_line: CGFloat { return 24 }
+    var sub_header_height_2_line: CGFloat { return 48 }
+    
+    
+    var label_width_iphone: CGFloat { return 382 }
+    var label_height_max: CGFloat { return 70 }
+    var sub_header_height_iphone: CGFloat { return 42}
+    
+    var image_to_screen_width_ratio: CGFloat { return 0.7 }
+    var center_image_width_height_ratio: CGFloat { return 1.3 }
+    
+    var isiPad:Bool { return UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad }
+    var isiPhone5: Bool { return UIScreen.main.bounds.height == 568 }
+    
+    var centerImage_to_header_distance: CGFloat
+    {
+        if isiPhone5
+        {
+            return UIScreen.main.bounds.height * 0.210
+        }
+        else
+        {
+            return UIScreen.main.bounds.height * 0.195
+        }
+    }
+    
+    var center_image_vertical_offset: CGFloat
+    {
+        if isiPhone5
+        {
+            return 27
+        }
+        else
+        {
+            return (UIScreen.main.bounds.height / 2.0 ) * 0.11
+        }
+    }
+    
+    var center_image_vertical_offset_ipad: CGFloat
+    {
+        let offset = (UIScreen.main.bounds.height / 2.0 ) * 0.11 - 20
+        return offset
+    }
+    
+ 
+    
+    var header_font: UIFont { return EWFontController.sharedInstance.font(forTextStyle: EWTextStyleSignupHeading) }
+    var subheader_font: UIFont { return EWFontController.sharedInstance.font(forTextStyle: EWTextStyleLandingHeadline3) }
+    
+    var header_color: UIColor { return EXPConstants.Colors.experianBlue }
+    var subheader_color: UIColor { return UIColor.experianLandingGray()}
+    
+    var page_to_button_distance: CGFloat { return -36 }
+    var page_controler_height: CGFloat { return 6 }
+    
+    var button_container_width: CGFloat { return 400 }
+    var button_container_edge: CGFloat { return 7 }
+    var button_container_height: CGFloat { return 52 }
+    var button_container_height_ipad: CGFloat { return 57 }
+    var button_container_ipad_bottom_spacing: CGFloat { return 42 }
+    
+    var stack_view_icon_width: CGFloat { return 74 }
+    var stack_view_icon_space_width: CGFloat { return 0 }
+    
+    var sign_in_button_text: String { return "Sign In" }
+    var join_for_free_button_text: String { return "Join Now for Free"}
+    var corner_radius_button: CGFloat {return 4}
+
+}
+
+
+
+//MARK: parent class (base class) to make code more clean in child classes 
+
+import UIKit
+
+protocol Parallax
+{
+    func updateParallaxOffset(collectionViewBounds bounds: CGRect)
+    
+    var headerImageViewParalllaxSpeedIphone: CGFloat { get }
+    var centerFrameParallaxSpeedIphone:CGFloat { get }
+    var labelParalllaxSpeedIphone:CGFloat { get }
+    
+    var labelParalllaxSpeedIpad:CGFloat { get }
+    var centerFrameParallaxSpeedIpad:CGFloat { get }
+    var headerImageViewParalllaxSpeedIpad: CGFloat { get }
+}
+
+extension Parallax
+{
+    var headerImageViewParalllaxSpeedIpad: CGFloat { return 20 }
+    var centerFrameParallaxSpeedIpad:CGFloat { return 8.0 }
+    var labelParalllaxSpeedIpad:CGFloat { return 9.0 }
+    
+    var headerImageViewParalllaxSpeedIphone: CGFloat { return 8.0}
+    var centerFrameParallaxSpeedIphone:CGFloat { return 4.0 }
+    var labelParalllaxSpeedIphone:CGFloat { return 4.0 }
+}
+
+class EXPFrontDoorCarouseCell: UICollectionViewCell, EXPSharedFrontDoorLayoutConstants,Parallax
+{
+    var backgroundOffset: CGFloat = 0
+    {
+        didSet{}
+    }
+    var parallaxOffset: CGFloat = 0
+    {
+        didSet{}
+    }
+    
+    func updateParallaxOffset(collectionViewBounds bounds: CGRect)
+    {
+    }
+    
+    
+    let backgroundContainerView: UIImageView =
+    {
+        let imageView = UIImageView()
+        imageView.clipsToBounds = true
+        imageView.contentMode = .scaleToFill
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
+    
+    let backgroundImageView: UIImageView =
+    {
+        let imageView = UIImageView()
+        imageView.clipsToBounds = true
+        imageView.contentMode = .scaleToFill
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+        
+    }()
+    
+    lazy var blurrEffectView: UIImageView =
+    {
+        let imageView = UIImageView()
+        imageView.clipsToBounds = true
+        imageView.contentMode = .scaleToFill
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        let blurrEffect = UIBlurEffect(style: UIBlurEffect.Style.light)
+        let blurrEffectView = UIVisualEffectView(effect: blurrEffect)
+        blurrEffectView.frame = self.bounds
+        blurrEffectView.alpha = 0.965
+        imageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        imageView.addSubview(blurrEffectView)
+        return imageView
+    }()
+    
+    let headerImageView: UIImageView =
+    {
+        let imageView = UIImageView()
+        imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFit
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
+    
+    lazy var headerLabel: UILabel =
+        {
+            let label = UILabel()
+            label.numberOfLines = 2
+            label.font = header_font
+            label.textColor = header_color
+            label.textAlignment = .center
+            label.minimumScaleFactor = 0.5
+            label.adjustsFontSizeToFitWidth = true
+            label.translatesAutoresizingMaskIntoConstraints = false
+            return label
+    }()
+    
+    lazy var subheaderLabel:UILabel =
+        {
+            let label = UILabel()
+            label.numberOfLines = 2
+            label.font = subheader_font
+            label.textColor = subheader_color
+            label.textAlignment = .center
+            label.minimumScaleFactor = 0.5
+            label.adjustsFontSizeToFitWidth = true
+            label.translatesAutoresizingMaskIntoConstraints = false
+            return label
+    }()
+    
+    
+    let centerContainer: UIView =
+    {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    
+    let centerImageViewFrame: UIImageView =
+    {
+        let imageview = UIImageView()
+        imageview.clipsToBounds = true
+        imageview.contentMode = .scaleToFill
+        imageview.translatesAutoresizingMaskIntoConstraints = false
+        return imageview
+    }()
+    
+    let centerImageView: UIImageView =
+    {
+        let imageview = UIImageView()
+        imageview.clipsToBounds = true
+        imageview.contentMode = .scaleToFill
+        imageview.translatesAutoresizingMaskIntoConstraints = false
+        return imageview
+    }()
+    
+    var pageContent: EXPFrontDoorCarouselPageModel?
+    {
+        didSet{}
+    }
+    
+    func addSubviewsOnCurrentCell()
+    {
+    }
+    
+    func layoutConstraints()
+    {
+    }
+}
+
+
+//MARK: different cell type
+//
+//  EXPFrontDoorCarouseTypeACell.swift
+//  FrontDoorCarousel
+//
+//  Created by Yu, Eric on 5/12/19.
+//  Copyright © 2019 Yu, Eric. All rights reserved.
+//
+
+import UIKit
+
+
+class EXPFrontDoorCarouseTypeACell: EXPFrontDoorCarouseCell
+{
+    var parallaxOffsetSpeedPercent:CGFloat = 0.7
+    let elementSpacing = UIScreen.main.bounds.height / 30
+    
+    override var backgroundOffset: CGFloat
+    {
+        didSet
+        {
+            blurrEffectView.center = CGPoint(x: backgroundOffset, y: blurrEffectView.center.y)
+      
+            if blurrEffectView.alpha == 0
+            {
+                blurrEffectView.center = backgroundContainerView.center
+            }
+        }
+    }
+
+    override var parallaxOffset: CGFloat
+    {
+        didSet
+        {
+            if isiPad
+            {
+                headerImageView.center = CGPoint(x: parallaxOffset * headerImageViewParalllaxSpeedIpad +  self.frame.width/2, y: headerImageView.center.y)
+                
+                subheaderLabel.center = CGPoint(x: parallaxOffset * centerFrameParallaxSpeedIpad  + self.frame.width/2, y: subheaderLabel.center.y)
+                smallExperianIconsStackView.center = CGPoint(x: parallaxOffset * centerFrameParallaxSpeedIpad + self.frame.width/2, y: smallExperianIconsStackView.center.y)
+            }
+            else
+            {
+                headerImageView.center = CGPoint(x: parallaxOffset * headerImageViewParalllaxSpeedIphone +  self.frame.width/2, y: headerImageView.center.y)
+                headerImageView.center = CGPoint(x: parallaxOffset * headerImageViewParalllaxSpeedIpad +  self.frame.width/2, y: headerImageView.center.y)
+                
+                subheaderLabel.center = CGPoint(x: parallaxOffset * centerFrameParallaxSpeedIpad  + self.frame.width/2, y: subheaderLabel.center.y)
+                smallExperianIconsStackView.center = CGPoint(x: parallaxOffset * centerFrameParallaxSpeedIpad + self.frame.width/2, y: smallExperianIconsStackView.center.y)
+            }
+           
+            if backgroundOffset > self.center.x
+            {
+                blurrEffectView.alpha =  1 - zeroToOneParabolEase(number: abs(parallaxOffset/100))
+            }
+        }
+    }
+  
+    func zeroToOneParabolEase(number:CGFloat) -> CGFloat
+    {
+        var x = number
+        var y = 2 * x * x
+        if(number > 0.5)
+        {
+            x = x - 1
+            y = -2 * x * x + 1
+        }
+        return y
+    }
+  
+    override func updateParallaxOffset(collectionViewBounds bounds: CGRect)
+    {
+        backgroundOffset = bounds.midX
+        
+        let offsetFromCenter = bounds.midX - self.center.x
+        let maxHorizontalOffset: CGFloat = bounds.width / 2 + self.bounds.width / 2
+        let scaleFactor: CGFloat = 100.0 / maxHorizontalOffset
+        parallaxOffset = -offsetFromCenter * scaleFactor * parallaxOffsetSpeedPercent
+    }
+
+    var smallExperianIconsStackView: UIStackView!
+    var icon1 = UIImageView()
+    var icon2 = UIImageView()
+    var icon3 = UIImageView()
+    var icon4 = UIImageView()
+
+    override var pageContent: EXPFrontDoorCarouselPageModel?
+    {
+        didSet
+        {
+            guard let pageContent = pageContent else { return }
+            
+            headerImageView.image = UIImage(named: pageContent.headerImage)
+            headerLabel.text = pageContent.header
+            subheaderLabel.text = pageContent.subheader
+            icon1.image = UIImage(named: pageContent.icon1name)
+            icon2.image = UIImage(named: pageContent.icon2name)
+            icon3.image = UIImage(named: pageContent.icon3name)
+            icon4.image = UIImage(named: pageContent.icon4name)
+        }
+    }
+    
+    override init(frame: CGRect)
+    {
+        super.init(frame: frame)
+        
+        initStackIconView()
+        addSubviewsOnCurrentCell()
+        
+    }
+    
+    required init?(coder aDecoder: NSCoder)
+    {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func initStackIconView()
+    {
+        smallExperianIconsStackView = UIStackView(arrangedSubviews: [icon1,icon2,icon3,icon4])
+        smallExperianIconsStackView.translatesAutoresizingMaskIntoConstraints = false
+        smallExperianIconsStackView.distribution = .fillEqually
+        smallExperianIconsStackView.axis = .horizontal
+        smallExperianIconsStackView.spacing = stack_view_icon_space_width
+    }
+    
+    override func addSubviewsOnCurrentCell()
+    {
+        addSubview(backgroundImageView)
+        addSubview(blurrEffectView)
+        addSubview(backgroundContainerView)
+    
+        backgroundContainerView.addSubview(headerImageView)
+        backgroundContainerView.addSubview(subheaderLabel)
+        backgroundContainerView.addSubview(smallExperianIconsStackView)
+        
+        layoutConstraints()
+    }
+    
+    override func prepareForReuse()
+    {
+        backgroundImageView.center = CGPoint(x: backgroundContainerView.center.x, y: backgroundContainerView.center.y)
+    }
+    
+    override func layoutConstraints()
+    {
+        backgroundImageView.topAnchor.constraint(equalTo: self.topAnchor, constant: 0).isActive = true
+        backgroundImageView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 0).isActive = true
+        backgroundImageView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 0).isActive = true
+        backgroundImageView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: 0).isActive = true
+
+        backgroundContainerView.topAnchor.constraint(equalTo: self.topAnchor, constant: 0).isActive = true
+        backgroundContainerView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 0).isActive = true
+        backgroundContainerView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 0).isActive = true
+        backgroundContainerView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: 0).isActive = true
+        
+        blurrEffectView.topAnchor.constraint(equalTo: self.topAnchor, constant: 0).isActive = true
+        blurrEffectView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 0).isActive = true
+        blurrEffectView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 0).isActive = true
+        blurrEffectView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: 0).isActive = true
+        
+        subheaderLabel.centerYAnchor.constraint(equalTo: self.centerYAnchor, constant: -sub_header_height_iphone).isActive = true
+        subheaderLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+        subheaderLabel.widthAnchor.constraint(equalToConstant: page1_subheader_width).isActive = true
+        subheaderLabel.heightAnchor.constraint(equalToConstant: sub_header_height_iphone).isActive = true
+    
+        headerImageView.bottomAnchor.constraint(equalTo: subheaderLabel.topAnchor, constant: -elementSpacing ).isActive = true
+        headerImageView.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+        headerImageView.widthAnchor.constraint(equalToConstant: header_image_width).isActive = true
+        headerImageView.heightAnchor.constraint(equalToConstant: header_image_height).isActive = true
+        
+        
+        let numberOficons: CGFloat = CGFloat(smallExperianIconsStackView.arrangedSubviews.count)
+        
+        smallExperianIconsStackView.topAnchor.constraint(equalTo: subheaderLabel.topAnchor, constant: elementSpacing * 3).isActive = true
+        smallExperianIconsStackView.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+        smallExperianIconsStackView.widthAnchor.constraint(equalToConstant: stack_view_icon_width * numberOficons + stack_view_icon_space_width * (numberOficons - 1.0)).isActive = true
+        smallExperianIconsStackView.heightAnchor.constraint(equalToConstant: stack_view_icon_width).isActive = true
+    }
+}
+
+//
+//  EXPFrontDoorCarouseTypeBCell.swift
+//  FrontDoorCarousel
+//
+//  Created by Yu, Eric on 5/12/19.
+//  Copyright © 2019 Yu, Eric. All rights reserved.
+//
+
+import UIKit
+import ExperianWorksFramework
+
+
+
+class EXPFrontDoorCarouseTypeBCell: EXPFrontDoorCarouseCell
+{
+    override var backgroundOffset: CGFloat
+    {
+        didSet
+        {
+            if backgroundOffset > self.center.x
+            {
+                showCurrentCellObjects()
+            }
+            else
+            {
+                hideCurrentCellObjects()
+            }    
+        }
+    }
+    
+    override var parallaxOffset: CGFloat
+    {
+        didSet
+        {
+            if isiPad
+            {
+                centerImageView.center = CGPoint(x: parallaxOffset * centerFrameParallaxSpeedIpad + self.frame.width/2, y: centerImageViewFrame.center.y)
+                
+                centerImageViewFrame.center = CGPoint(x: parallaxOffset * centerFrameParallaxSpeedIpad + self.frame.width/2, y: centerImageViewFrame.center.y)
+                
+                headerLabel.center = CGPoint(x: parallaxOffset * labelParalllaxSpeedIpad + self.frame.width/2, y: headerLabel.center.y)
+                subheaderLabel.center = CGPoint(x: parallaxOffset * labelParalllaxSpeedIpad + self.frame.width/2, y: subheaderLabel.center.y)
+            }
+            else
+            {
+                centerImageView.center = CGPoint(x: parallaxOffset + self.frame.width/2, y: centerImageViewFrame.center.y)
+                
+                centerImageViewFrame.center = CGPoint(x: parallaxOffset + self.frame.width/2, y: centerImageViewFrame.center.y)
+                
+                headerLabel.center = CGPoint(x: parallaxOffset * labelParalllaxSpeedIphone + self.frame.width/2, y: headerLabel.center.y)
+                subheaderLabel.center = CGPoint(x: parallaxOffset * labelParalllaxSpeedIphone + self.frame.width/2, y: subheaderLabel.center.y)
+            }
+        }
+    }
+    
+    func hideCurrentCellObjects()
+    {
+        backgroundImageView.alpha = 0
+        subheaderLabel.alpha = 0
+        headerLabel.alpha = 0
+        centerImageViewFrame.alpha = 0
+        centerImageView.alpha = 0
+        blurrEffectView.alpha =  0
+    }
+    func showCurrentCellObjects()
+    {
+        backgroundImageView.alpha = 1
+        subheaderLabel.alpha = 1
+        headerLabel.alpha = 1
+        centerImageViewFrame.alpha = 1
+        centerImageView.alpha = 1
+    }
+  
+    override func updateParallaxOffset(collectionViewBounds bounds: CGRect)
+    {
+        backgroundOffset = bounds.midX
+        let offsetFromCenter = bounds.midX - self.center.x
+        let maxHorizontalOffset: CGFloat = bounds.width / 2 + self.bounds.width / 2
+        let scaleFactor: CGFloat = 400.0 / maxHorizontalOffset
+        parallaxOffset = -offsetFromCenter * scaleFactor
+    }
+
+    override var pageContent: EXPFrontDoorCarouselPageModel?
+    {
+        didSet
+        {
+            guard let pageContent = pageContent else { return }
+            headerLabel.attributedText = EXPStrings.superScriptString(pageContent.header, stringToSuperScript: ["®"], font: headerLabel.font)
+            subheaderLabel.text = pageContent.subheader
+            backgroundImageView.image = EXPFrontDoorCarouselPageModel.fetchBackgroundImageAssetBaseOnScreenDimension(page: pageContent)
+            centerImageView.image = UIImage(named: pageContent.centerImage)
+            centerImageViewFrame.image = UIImage(named: pageContent.backgroundContainerFrameName)
+        }
+    }
+    
+    override init(frame: CGRect)
+    {
+        super.init(frame: frame)
+        addSubviewsOnCurrentCell()
+    }
+    
+    required init?(coder aDecoder: NSCoder)
+    {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func addSubviewsOnCurrentCell()
+    {
+        addSubview(backgroundImageView)
+        addSubview(backgroundContainerView)
+        backgroundImageView.addSubview(blurrEffectView)
+        backgroundImageView.addSubview(headerLabel)
+        backgroundImageView.addSubview(subheaderLabel)
+        backgroundImageView.addSubview(centerImageViewFrame)
+        backgroundImageView.addSubview(centerImageView)
+        
+        layoutConstraints()
+    }
+    
+    
+    override func layoutConstraints()
+    {
+        backgroundContainerView.topAnchor.constraint(equalTo: self.topAnchor, constant: 0).isActive = true
+        backgroundContainerView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 0).isActive = true
+        backgroundContainerView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 0).isActive = true
+        backgroundContainerView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: 0).isActive = true
+        
+        backgroundImageView.topAnchor.constraint(equalTo: self.topAnchor, constant: 0).isActive = true
+        backgroundImageView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 0).isActive = true
+        backgroundImageView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 0).isActive = true
+        backgroundImageView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: 0).isActive = true
+        
+        blurrEffectView.topAnchor.constraint(equalTo: self.topAnchor, constant: 0).isActive = true
+        blurrEffectView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 0).isActive = true
+        blurrEffectView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 0).isActive = true
+        blurrEffectView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: 0).isActive = true
+        
+        if isiPad
+        {
+            headerLabel.topAnchor.constraint(equalTo: centerImageViewFrame.topAnchor, constant: -centerImage_to_header_distance).isActive = true
+            headerLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+            headerLabel.widthAnchor.constraint(equalToConstant: label_width).isActive = true
+            subheaderLabel.topAnchor.constraint(equalTo: headerLabel.bottomAnchor, constant: label_spacing).isActive = true
+            subheaderLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+            subheaderLabel.widthAnchor.constraint(equalToConstant: label_width).isActive = true
+            headerLabel.heightAnchor.constraint(lessThanOrEqualToConstant: header_height_2_line).isActive = true
+            subheaderLabel.heightAnchor.constraint(lessThanOrEqualToConstant: sub_header_height_2_line).isActive = true
+        }
+        else
+        {
+            headerLabel.topAnchor.constraint(equalTo: centerImageViewFrame.topAnchor, constant: -centerImage_to_header_distance).isActive = true
+            headerLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+            headerLabel.widthAnchor.constraint(equalToConstant: label_width_iphone).isActive = true
+            headerLabel.heightAnchor.constraint(lessThanOrEqualToConstant: label_height_max).isActive = true
+            
+            subheaderLabel.topAnchor.constraint(equalTo: headerLabel.bottomAnchor, constant: label_spacing).isActive = true
+            subheaderLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+            
+            subheaderLabel.widthAnchor.constraint(equalToConstant: label_width_iphone).isActive = true
+            subheaderLabel.heightAnchor.constraint(equalToConstant: sub_header_height_iphone).isActive = true
+        }
+        
+        if isiPad
+        {
+            centerImageViewFrame.heightAnchor.constraint(equalToConstant: centerImageViewFrame_height + frame_padding).isActive = true
+            centerImageViewFrame.widthAnchor.constraint(equalToConstant: centerImageViewFrame_width + frame_padding).isActive = true
+            centerImageViewFrame.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+            centerImageViewFrame.centerYAnchor.constraint(equalTo: self.centerYAnchor,constant: center_image_vertical_offset_ipad).isActive = true
+        }
+        else
+        {
+            centerImageViewFrame.centerYAnchor.constraint(equalTo: self.centerYAnchor,constant: center_image_vertical_offset ).isActive = true
+            centerImageViewFrame.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+            centerImageViewFrame.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: image_to_screen_width_ratio).isActive = true
+            centerImageViewFrame.heightAnchor.constraint(equalTo: centerImageViewFrame.widthAnchor, multiplier: center_image_width_height_ratio).isActive = true
+        }
+        
+        centerImageView.topAnchor.constraint(equalTo: centerImageViewFrame.topAnchor, constant: frame_padding).isActive = true
+        centerImageView.leftAnchor.constraint(equalTo: centerImageViewFrame.leftAnchor, constant: frame_padding).isActive = true
+        centerImageView.rightAnchor.constraint(equalTo: centerImageViewFrame.rightAnchor, constant: -frame_padding).isActive = true
+        centerImageView.bottomAnchor.constraint(equalTo: centerImageViewFrame.bottomAnchor, constant: -frame_padding).isActive = true
+    }
+
+}
+
+//
+//  EXPFrontDoorCarouseTypeCCell.swift
+//  FrontDoorCarousel
+//
+//  Created by Yu, Eric on 5/12/19.
+//  Copyright © 2019 Yu, Eric. All rights reserved.
+//
+
+import UIKit
+
+class EXPFrontDoorCarouseTypeCCell: EXPFrontDoorCarouseCell
+{
+    override var parallaxOffset: CGFloat
+    {
+        didSet
+        {
+            if isiPad
+            {
+                centerImageView.center = CGPoint(x: parallaxOffset + self.frame.width/2, y: centerImageViewFrame.center.y)
+                
+                centerImageViewFrame.center = CGPoint(x: parallaxOffset + self.frame.width/2, y: centerImageViewFrame.center.y)
+                
+                headerLabel.center = CGPoint(x: parallaxOffset * 10.0 + self.frame.width/2, y: headerLabel.center.y)
+                subheaderLabel.center = CGPoint(x: parallaxOffset * 10.0 + self.frame.width/2, y: subheaderLabel.center.y)
+            }
+            else
+            {
+                centerImageView.center = CGPoint(x: parallaxOffset + self.frame.width/2, y: centerImageViewFrame.center.y)
+                centerImageViewFrame.center = CGPoint(x: parallaxOffset + self.frame.width/2, y: centerImageViewFrame.center.y)
+                
+                headerLabel.center = CGPoint(x: parallaxOffset * labelParalllaxSpeedIphone + self.frame.width/2, y: headerLabel.center.y)
+                subheaderLabel.center = CGPoint(x: parallaxOffset * labelParalllaxSpeedIphone + self.frame.width/2, y: subheaderLabel.center.y)
+            }
+        }
+    }
+    
+    override func updateParallaxOffset(collectionViewBounds bounds: CGRect)
+    {
+        let offsetFromCenter = bounds.midX - self.center.x
+        let maxHorizontalOffset: CGFloat = bounds.width / 2 + self.bounds.width / 2
+        let scaleFactor: CGFloat = 400.0 / maxHorizontalOffset
+        parallaxOffset = -offsetFromCenter * scaleFactor
+    }
+        
+    override var pageContent: EXPFrontDoorCarouselPageModel?
+    {
+        didSet
+        {
+            guard let pageContent = pageContent else { return }
+            headerLabel.text = pageContent.header
+            subheaderLabel.attributedText = EXPStrings.superScriptString(pageContent.subheader, stringToSuperScript: ["®"], font: subheaderLabel.font)
+            backgroundImageView.image = EXPFrontDoorCarouselPageModel.fetchBackgroundImageAssetBaseOnScreenDimension(page: pageContent)
+            centerImageView.image = UIImage(named: pageContent.centerImage)
+            centerImageViewFrame.image = UIImage(named: pageContent.backgroundContainerFrameName)
+        }
+    }
+    
+    override init(frame: CGRect)
+    {
+        super.init(frame: frame)
+        addSubviewsOnCurrentCell()
+    }
+    
+    required init?(coder aDecoder: NSCoder)
+    {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func addSubviewsOnCurrentCell()
+    {
+        addSubview(backgroundImageView)
+        addSubview(backgroundContainerView)
+        backgroundImageView.addSubview(headerLabel)
+        backgroundImageView.addSubview(subheaderLabel)
+        backgroundImageView.addSubview(centerImageViewFrame)
+        backgroundImageView.addSubview(centerImageView)
+        
+        layoutConstraints()
+    }
+
+    override func layoutConstraints()
+    {
+        backgroundContainerView.topAnchor.constraint(equalTo: self.topAnchor, constant: 0).isActive = true
+        backgroundContainerView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 0).isActive = true
+        backgroundContainerView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 0).isActive = true
+        backgroundContainerView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: 0).isActive = true
+        
+        backgroundImageView.topAnchor.constraint(equalTo: self.topAnchor, constant: 0).isActive = true
+        backgroundImageView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 0).isActive = true
+        backgroundImageView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 0).isActive = true
+        backgroundImageView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: 0).isActive = true
+        
+        if isiPad
+        {
+            headerLabel.topAnchor.constraint(equalTo: centerImageViewFrame.topAnchor, constant: -centerImage_to_header_distance).isActive = true
+            headerLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+            headerLabel.widthAnchor.constraint(equalToConstant: label_width).isActive = true
+            subheaderLabel.topAnchor.constraint(equalTo: headerLabel.bottomAnchor, constant: label_spacing).isActive = true
+            subheaderLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+            subheaderLabel.widthAnchor.constraint(equalToConstant: label_width).isActive = true
+            headerLabel.heightAnchor.constraint(lessThanOrEqualToConstant: header_height_2_line).isActive = true
+            subheaderLabel.heightAnchor.constraint(lessThanOrEqualToConstant: sub_header_height_2_line).isActive = true
+        }
+        else
+        {
+            headerLabel.topAnchor.constraint(equalTo: centerImageViewFrame.topAnchor, constant: -centerImage_to_header_distance).isActive = true
+            headerLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+            headerLabel.widthAnchor.constraint(equalToConstant: label_width_iphone).isActive = true
+            headerLabel.heightAnchor.constraint(lessThanOrEqualToConstant: label_height_max).isActive = true
+            
+            subheaderLabel.topAnchor.constraint(equalTo: headerLabel.bottomAnchor, constant: label_spacing).isActive = true
+            subheaderLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+            
+            subheaderLabel.widthAnchor.constraint(equalToConstant: label_width_iphone).isActive = true
+            subheaderLabel.heightAnchor.constraint(equalToConstant: sub_header_height_iphone).isActive = true
+        }
+        
+        if isiPad
+        {
+            centerImageViewFrame.heightAnchor.constraint(equalToConstant: centerImageViewFrame_height + frame_padding).isActive = true
+            centerImageViewFrame.widthAnchor.constraint(equalToConstant: centerImageViewFrame_width + frame_padding).isActive = true
+            centerImageViewFrame.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+            centerImageViewFrame.centerYAnchor.constraint(equalTo: self.centerYAnchor,constant: center_image_vertical_offset_ipad).isActive = true
+        }
+        else
+        {
+            centerImageViewFrame.centerYAnchor.constraint(equalTo: self.centerYAnchor,constant: center_image_vertical_offset ).isActive = true
+            centerImageViewFrame.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+            centerImageViewFrame.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: image_to_screen_width_ratio).isActive = true
+            centerImageViewFrame.heightAnchor.constraint(equalTo: centerImageViewFrame.widthAnchor, multiplier: center_image_width_height_ratio).isActive = true
+        }
+        
+        centerImageView.topAnchor.constraint(equalTo: centerImageViewFrame.topAnchor, constant: frame_padding).isActive = true
+        centerImageView.leftAnchor.constraint(equalTo: centerImageViewFrame.leftAnchor, constant: frame_padding).isActive = true
+        centerImageView.rightAnchor.constraint(equalTo: centerImageViewFrame.rightAnchor, constant: -frame_padding).isActive = true
+        centerImageView.bottomAnchor.constraint(equalTo: centerImageViewFrame.bottomAnchor, constant: -frame_padding).isActive = true
+    }
+
+}
+
+//
+//  EXPFrontDoorCarouseLastCell.swift
+//  FrontDoorCarousel
+//
+//  Created by Yu, Eric on 5/13/19.
+//  Copyright © 2019 Yu, Eric. All rights reserved.
+//
+
+import UIKit
+
+class EXPFrontDoorCarouseTypeDCell: EXPFrontDoorCarouseCell
+{
+    override var backgroundOffset: CGFloat
+    {
+        didSet
+        {
+            if backgroundOffset > self.center.x
+            {
+                
+                backgroundImageView.center = CGPoint(x: backgroundContainerView.center.x + (backgroundOffset - self.center.x), y: backgroundImageView.center.y)
+            }
+            else
+            {
+                backgroundImageView.center = backgroundContainerView.center
+            }
+        }
+    }
+
+    override var parallaxOffset: CGFloat
+    {
+        didSet
+        {
+            if isiPad
+            {
+                centerImageView.center = CGPoint(x: parallaxOffset * centerFrameParallaxSpeedIpad + self.frame.width/2, y: centerImageViewFrame.center.y)
+                
+                centerImageViewFrame.center = CGPoint(x: parallaxOffset * centerFrameParallaxSpeedIpad + self.frame.width/2, y: centerImageViewFrame.center.y)
+                
+                headerLabel.center = CGPoint(x: parallaxOffset * labelParalllaxSpeedIpad + self.frame.width/2, y: headerLabel.center.y)
+                subheaderLabel.center = CGPoint(x: parallaxOffset * labelParalllaxSpeedIpad + self.frame.width/2, y: subheaderLabel.center.y)
+            }
+            else
+            {
+                centerImageView.center = CGPoint(x: parallaxOffset + self.frame.width/2, y: centerImageViewFrame.center.y)
+                
+                centerImageViewFrame.center = CGPoint(x: parallaxOffset + self.frame.width/2, y: centerImageViewFrame.center.y)
+                
+                headerLabel.center = CGPoint(x: parallaxOffset * labelParalllaxSpeedIphone + self.frame.width/2, y: headerLabel.center.y)
+                subheaderLabel.center = CGPoint(x: parallaxOffset * labelParalllaxSpeedIphone + self.frame.width/2, y: subheaderLabel.center.y)
+            }
+        }
+    }
+    
+    override func updateParallaxOffset(collectionViewBounds bounds: CGRect)
+    {
+        backgroundOffset = bounds.midX
+        let offsetFromCenter = bounds.midX - self.center.x
+        let maxHorizontalOffset: CGFloat = bounds.width / 2 + self.bounds.width / 2
+        let scaleFactor: CGFloat = 400.0 / maxHorizontalOffset
+        parallaxOffset = -offsetFromCenter * scaleFactor
+    }
+    
+    override var pageContent: EXPFrontDoorCarouselPageModel?
+    {
+        didSet
+        {
+            guard let pageContent = pageContent else { return }
+            headerLabel.text = pageContent.header
+            subheaderLabel.attributedText = EXPStrings.superScriptString(pageContent.subheader, stringToSuperScript: ["®"], font: subheaderLabel.font)
+            backgroundImageView.image = EXPFrontDoorCarouselPageModel.fetchBackgroundImageAssetBaseOnScreenDimension(page: pageContent)
+            centerImageView.image = UIImage(named: pageContent.centerImage)
+            centerImageViewFrame.image = UIImage(named: pageContent.backgroundContainerFrameName)
+        }
+    }
+    
+    override init(frame: CGRect)
+    {
+        super.init(frame: frame)
+        addSubviewsOnCurrentCell()
+    }
+    
+    required init?(coder aDecoder: NSCoder)
+    {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func addSubviewsOnCurrentCell()
+    {
+        addSubview(backgroundImageView)
+        addSubview(backgroundContainerView)
+        backgroundContainerView.addSubview(headerLabel)
+        backgroundContainerView.addSubview(subheaderLabel)
+        backgroundContainerView.addSubview(centerImageViewFrame)
+        backgroundContainerView.addSubview(centerImageView)
+        
+        layoutConstraints()
+    }
+    
+    override func layoutConstraints()
+    {
+        backgroundContainerView.topAnchor.constraint(equalTo: self.topAnchor, constant: 0).isActive = true
+        backgroundContainerView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 0).isActive = true
+        backgroundContainerView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 0).isActive = true
+        backgroundContainerView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: 0).isActive = true
+        
+        backgroundImageView.topAnchor.constraint(equalTo: self.topAnchor, constant: 0).isActive = true
+        backgroundImageView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 0).isActive = true
+        backgroundImageView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 0).isActive = true
+        backgroundImageView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: 0).isActive = true
+        
+        if isiPad
+        {
+            headerLabel.topAnchor.constraint(equalTo: centerImageViewFrame.topAnchor, constant: -centerImage_to_header_distance).isActive = true
+            headerLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+            headerLabel.widthAnchor.constraint(equalToConstant: label_width).isActive = true
+            subheaderLabel.topAnchor.constraint(equalTo: headerLabel.bottomAnchor, constant: label_spacing).isActive = true
+            subheaderLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+            subheaderLabel.widthAnchor.constraint(equalToConstant: label_width).isActive = true
+            headerLabel.heightAnchor.constraint(lessThanOrEqualToConstant: header_height_2_line).isActive = true
+            subheaderLabel.heightAnchor.constraint(lessThanOrEqualToConstant: sub_header_height_2_line).isActive = true
+        }
+        else
+        {
+            headerLabel.topAnchor.constraint(equalTo: centerImageViewFrame.topAnchor, constant: -centerImage_to_header_distance).isActive = true
+            headerLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+            headerLabel.widthAnchor.constraint(equalToConstant: label_width_iphone).isActive = true
+            headerLabel.heightAnchor.constraint(lessThanOrEqualToConstant: label_height_max).isActive = true
+            
+            subheaderLabel.topAnchor.constraint(equalTo: headerLabel.bottomAnchor, constant: label_spacing).isActive = true
+            subheaderLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+            
+            subheaderLabel.widthAnchor.constraint(equalToConstant: label_width_iphone).isActive = true
+            subheaderLabel.heightAnchor.constraint(equalToConstant: sub_header_height_iphone).isActive = true
+        }
+        
+        
+        if isiPad
+        {
+            centerImageViewFrame.heightAnchor.constraint(equalToConstant: centerImageViewFrame_height + frame_padding).isActive = true
+            centerImageViewFrame.widthAnchor.constraint(equalToConstant: centerImageViewFrame_width + frame_padding).isActive = true
+            centerImageViewFrame.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+            centerImageViewFrame.centerYAnchor.constraint(equalTo: self.centerYAnchor,constant: center_image_vertical_offset_ipad).isActive = true
+        }
+        else
+        {
+            centerImageViewFrame.centerYAnchor.constraint(equalTo: self.centerYAnchor,constant: center_image_vertical_offset ).isActive = true
+            centerImageViewFrame.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+            centerImageViewFrame.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: image_to_screen_width_ratio).isActive = true
+            centerImageViewFrame.heightAnchor.constraint(equalTo: centerImageViewFrame.widthAnchor, multiplier: center_image_width_height_ratio).isActive = true
+        }
+        
+        centerImageView.topAnchor.constraint(equalTo: centerImageViewFrame.topAnchor, constant: frame_padding).isActive = true
+        centerImageView.leftAnchor.constraint(equalTo: centerImageViewFrame.leftAnchor, constant: frame_padding).isActive = true
+        centerImageView.rightAnchor.constraint(equalTo: centerImageViewFrame.rightAnchor, constant: -frame_padding).isActive = true
+        centerImageView.bottomAnchor.constraint(equalTo: centerImageViewFrame.bottomAnchor, constant: -frame_padding).isActive = true
+    }
+}
+
