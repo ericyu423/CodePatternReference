@@ -1,0 +1,32 @@
+Test:
+
+let serialQueue = DispatchQueue(label: "com.experian.serialQueue")
+
+DispatchQueue.concurrentPerform(iterations: 1000) { index in
+   
+    serialQueue.sync(flags: .barrier) {
+        let last = myArry.last ?? 0
+        myArry.append(last + 1)
+    }
+    serialQueue.sync(flags: .barrier) {
+        let last = myArry.last ?? 0
+        myArry.append(last - 1)
+    }
+}
+
+let serialQueue = DispatchQueue(label: "ExperianSerialQueue")
+
+func addEventToCache(event: eventObjectType)
+    {
+        serialQueue.async() {
+            self.eventArray.append(event)
+        }
+    }
+    
+    @objc func logEventsInCache()
+    {
+
+        serialQueue.async() {
+            self.eventArray.removeAll()
+        }
+    }
