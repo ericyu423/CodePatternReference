@@ -1,0 +1,109 @@
+dispatchGroup pattern:
+
+
+exmaple
+let dispatchGroup = DispatchGroup()
+
+        
+        dispatchGroup.enter()
+        self.refreshUIProfile() { (success:Bool, Profile: profile, error:error?) in
+            if(success == false)
+            {
+                result = false
+            }
+            dispatchGroup.leave()
+        }
+        dispatchGroup.enter()
+        
+        self.refreshMyAccount() { (succes:Bool, error:error) in
+            if(succes == false)
+            {
+                result = false
+            }
+            dispatchGroup.leave()
+        }
+        
+        dispatchGroup.notify(queue: .main) {
+            completion(result)
+        }
+        
+        
+ when enter count = leave count notify happens
+ 
+ ================
+ This one is a little bit slower because it had to wait one after another
+ 
+let semaphore = DispatchSemaphore(value:1)
+let dispatchQueue = DispatchQueue.global(qos: .background)
+
+dispatchQueue.async 
+{
+
+    semaphore.wait()
+    print("1")
+    semaphore.signal()
+    
+    semaphore.wait()
+    print("2")
+    semaphore.signal()
+}
+print("0")
+
+print - 0, 1 , 2
+======================== 
+ let semaphore = DispatchSemaphore(value:0)
+let dispatchQueue = DispatchQueue.global(qos: .background)
+
+dispatchQueue.async {
+    semaphore.wait()
+    print("1")
+    semaphore.signal()
+    
+    
+    semaphore.wait()
+    print("2")
+    semaphore.signal()
+}
+print("0")
+
+print - 0
+
+==============
+ 
+  let semaphore = DispatchSemaphore(value:0)
+let dispatchQueue = DispatchQueue.global(qos: .background)
+
+dispatchQueue.async {
+ 
+    print("1")
+    semaphore.signal()
+       semaphore.wait()
+    
+    
+  
+    print("2")
+    semaphore.signal()
+      semaphore.wait()
+}
+print("0")
+
+print - 0
+
+
+======
+example 3
+
+let semaphore = DispatchSemaphore(value:2)
+let dispatchQueue = DispatchQueue.global(qos: .background)
+
+dispatchQueue.async {
+    semaphore.wait() // --value , if value = 0 go
+    print("1")
+    semaphore.wait()//-- value , if value = 0 go, if value is negative wait
+    print("2")
+    semaphore.wait()
+    print("3")
+}
+print("0")
+
+print- 0, 1, 2
