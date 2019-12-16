@@ -1,0 +1,7 @@
+navigationController.navigationBar.topItem?.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+
+
+put it in desitination viewdidload
+
+or 
+set it in ParentVC
