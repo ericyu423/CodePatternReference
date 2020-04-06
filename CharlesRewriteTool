@@ -1,0 +1,29 @@
+Rewrite backend response
+
+1. Charels -> top menu -> tool -> rewrite...
+
+2. Add
+Location (api end point)
+Body (response/request)
+
+example. 
+
+rewrite body
+
+Type: Body
+
+Request (uncheck) Response (check)
+*leave everything blank except*
+value: 
+
+(paste your response here)
+{     "report": {    "reportId": "2020030318",        
+                
+                          "creditFileInfo": [],        
+                          "bonus": false     } 
+ }
+
+
+replaceAll (selected)
+
+
