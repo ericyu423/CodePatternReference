@@ -60,7 +60,7 @@ class ViewController: UIViewController, ASAuthorizationControllerDelegate, ASAut
                     //MARK: token contains expiration date, basicslly it will expire in about 10 min
                     //token also contain email and id
                     /*
-                     ["nonce_supported": 1, "exp": 1589851628, "iss": https://appleid.apple.com, "c_hash": 16OeaSSzUL4XwAYfc9MyzQ, "email": ericyu423@icloud.com, "iat": 1589851028, "email_verified": true, "sub": 000431.0a5eb2d9833848d9a42e7eda23d3ef27.1934, "auth_time": 1589851028, "aud": com.ericyu423.AppleSignIn]
+                     ["nonce_supported": 1, "exp": 1589851628, "iss": https://appleid.apple.com, "c_hash": 16OeaSSzUL4XwAYfc9MyzQ, "email": e*******, "iat": 1589851028, "email_verified": true, "sub": 000431.0a5eb2d9f27.1934, "auth_time": 1589851028, "aud": com.ericyu423.AppleSignIn]
                      */
                     print(json)
                     let expireDate = Date(timeIntervalSince1970: 1589851566)
@@ -150,7 +150,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool
     {
         let appleIDProvider = ASAuthorizationAppleIDProvider()
-               appleIDProvider.getCredentialState(forUserID: "000431.0a5eb2d9833848d9a42e7eda23d3ef27.1934")
+               appleIDProvider.getCredentialState(forUserID: "000.1934")
                { (credentialState, error) in
                    switch credentialState {
                    case .authorized:
