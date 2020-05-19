@@ -1,0 +1,168 @@
+import UIKit
+import AuthenticationServices
+
+class ViewController: UIViewController, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding
+{
+    lazy var appleSignInButton: ASAuthorizationAppleIDButton =
+    {
+        let button = ASAuthorizationAppleIDButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self,action: #selector(signInButtonTapped), for: .touchUpInside)
+        return button
+    }()
+    
+    override func viewDidLoad()
+    {
+        super.viewDidLoad()
+        centerSignInButtonInView()
+    }
+
+    func centerSignInButtonInView()
+    {
+        view.addSubview(appleSignInButton)
+        appleSignInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        appleSignInButton.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+    }
+    
+    @objc func signInButtonTapped()
+    {
+        let requestID = ASAuthorizationAppleIDProvider().createRequest()
+       //let requestPassowrd = ASAuthorizationPasswordProvider().createRequest()
+        
+        requestID.requestedScopes = [.email,.fullName]
+  
+        //let controller = ASAuthorizationController(authorizationRequests: [requestID,requestPassowrd])
+        let controller = ASAuthorizationController(authorizationRequests: [requestID])
+        controller.delegate = self
+        controller.presentationContextProvider = self
+        controller.performRequests()
+
+    }
+
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization)
+    {
+       switch authorization.credential
+       {
+        case let appleIDCredential as ASAuthorizationAppleIDCredential:
+            
+            let user = UserInfo(credentials: appleIDCredential)
+            print(user)
+            
+            let authrozzatioCode = appleIDCredential.authorizationCode
+            print(String(data: authrozzatioCode!, encoding: .utf8))
+            
+            if let token = appleIDCredential.identityToken
+            {
+                if let token = String(data: token, encoding: .utf8)
+                {
+                    let json = decode(jwtToken: token)
+                                    
+                    //MARK: token contains expiration date, basicslly it will expire in about 10 min
+                    //token also contain email and id
+                    /*
+                     ["nonce_supported": 1, "exp": 1589851628, "iss": https://appleid.apple.com, "c_hash": 16OeaSSzUL4XwAYfc9MyzQ, "email": ericyu423@icloud.com, "iat": 1589851028, "email_verified": true, "sub": 000431.0a5eb2d9833848d9a42e7eda23d3ef27.1934, "auth_time": 1589851028, "aud": com.ericyu423.AppleSignIn]
+                     */
+                    print(json)
+                    let expireDate = Date(timeIntervalSince1970: 1589851566)
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateStyle = .medium
+                    dateFormatter.timeStyle = .medium
+                    dateFormatter.locale = Locale(identifier: "en_US")
+                    print(dateFormatter.string(from: expireDate))
+                }
+            }
+            
+         
+        case let passwordCredential as ASPasswordCredential:
+            let username = passwordCredential.user
+            let password = passwordCredential.password
+            print(username)
+            print(password)
+        default:
+            break
+        }
+
+    }
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error)
+    {
+        //provide error here
+    }
+    
+    
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor
+    {
+        return view.window!
+    }
+}
+
+
+struct UserInfo
+{
+    let id: String
+    let firstName: String
+    let middleName: String
+    let lastName: String
+    let email: String
+    
+    init(credentials: ASAuthorizationAppleIDCredential)
+    {
+        self.id = credentials.user
+        self.firstName = credentials.fullName?.givenName ?? ""
+        self.middleName = credentials.fullName?.middleName ?? ""
+        self.lastName = credentials.fullName?.familyName ?? ""
+        self.email = credentials.email ?? ""
+    }
+}
+
+
+func decode(jwtToken jwt: String) -> [String: Any] {
+  let segments = jwt.components(separatedBy: ".")
+  return decodeJWTPart(segments[1]) ?? [:]
+}
+
+func base64UrlDecode(_ value: String) -> Data? {
+  var base64 = value
+    .replacingOccurrences(of: "-", with: "+")
+    .replacingOccurrences(of: "_", with: "/")
+
+  let length = Double(base64.lengthOfBytes(using: String.Encoding.utf8))
+  let requiredLength = 4 * ceil(length / 4.0)
+  let paddingLength = requiredLength - length
+  if paddingLength > 0 {
+    let padding = "".padding(toLength: Int(paddingLength), withPad: "=", startingAt: 0)
+    base64 = base64 + padding
+  }
+  return Data(base64Encoded: base64, options: .ignoreUnknownCharacters)
+}
+
+func decodeJWTPart(_ value: String) -> [String: Any]? {
+  guard let bodyData = base64UrlDecode(value),
+    let json = try? JSONSerialization.jsonObject(with: bodyData, options: []), let payload = json as? [String: Any] else {
+      return nil
+  }
+
+  return payload
+}
+
+class AppDelegate: UIResponder, UIApplicationDelegate
+{
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool
+    {
+        let appleIDProvider = ASAuthorizationAppleIDProvider()
+               appleIDProvider.getCredentialState(forUserID: "000431.0a5eb2d9833848d9a42e7eda23d3ef27.1934")
+               { (credentialState, error) in
+                   switch credentialState {
+                   case .authorized:
+                        print("authorized")
+                       break
+                   case .revoked, .notFound:
+                       break
+                    default:
+                        break
+                }
+            }
+               
+        return true
+    }
+}
