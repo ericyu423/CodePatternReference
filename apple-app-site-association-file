@@ -1,0 +1,15 @@
+{
+    "applinks": {
+        "apps": [],
+        "details": [
+            {
+                "appID": "XFDXLZRBS4.com.ericyu423.JuiceC",
+                "paths": ["*"],
+               
+            }
+        ]
+    },
+    "webcredentials": {
+        "apps": ["XFDXLZRBS4.com.ericyu423.JuiceC"]
+    }
+} 
