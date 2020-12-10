@@ -1,0 +1,28 @@
+
+When Empty ViewController is created in the storyboard, the following code will load/put another viewController's view in it
+
+class ExampleViewControllerLoader: UIViewController
+{
+    override func viewDidLoad()
+    {
+        super.viewDidLoad()
+        
+        let someViewController = SomeViewController()
+
+        let aVC: UIViewController
+        if UIDevice.isiPad
+        {
+            aVC = someViewController.getProtectionProfileNavVC(showCloseButton: true)
+            aVC.modalPresentationStyle = .formSheet
+        }
+        else
+        {
+            aVC = someViewController.getProtectionProfileVC(showCloseButton: false)
+        }
+
+        self.addChild(aVC)
+        aVC.view.frame = self.view.bounds
+        self.view.addSubview(aVC.view)
+        aVC.didMove(toParent: self)
+    }
+}
